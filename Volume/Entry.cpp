@@ -53,3 +53,27 @@ char* Entry::toBytes() {
 
 	return data;
 }
+
+string Entry::getFileName() {
+	return name;
+}
+
+int Entry::getDataSize() {
+	return dataSize;
+}
+
+void Entry::read(FILE* f) {
+}
+
+void Entry::Display(vector<Entry> listEntry) {
+	for (int i = 0; i < listEntry.size(); i++) {
+		Entry e = listEntry[i];
+		string name = e.getFileName();
+		cout << name;
+	}
+	cout << "\n";
+}
+
+bool Entry::checkPassword(string password) {
+	return true;
+}

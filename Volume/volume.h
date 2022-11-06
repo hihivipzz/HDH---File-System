@@ -38,7 +38,7 @@ public:
 	bool resetPassWord(string newPW);
 
 	void import(string path);
-	//void outport(string file, string outportPath);
+	bool outport(FILE* f, string filename, vector<Entry*>& listEntry, string outportPath);
 
 	//void deleteFile(string file);
 
