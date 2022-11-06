@@ -1,4 +1,5 @@
 ﻿#include "Entry.h"
+#include"utils.h"
 
 void Entry::createEntry(string name, string password, int dataSize, int type, uint16_t startCluster) {
 	this->name = name; // tên file 
@@ -9,9 +10,10 @@ void Entry::createEntry(string name, string password, int dataSize, int type, ui
 		this->password = RSA_pwd::encryptPassword(password);
 		this->passSize = password.length();
 	}
-
-	this->password = "";
-	this->passSize = 0;
+	else {
+		this->password = "";
+		this->passSize = 0;
+	}
 
 	// Thiết lập ngày import vào
 	struct tm newtime;
@@ -28,8 +30,26 @@ void Entry::createEntry(string name, string password, int dataSize, int type, ui
 	int hour = newtime.tm_hour; // giờ
 	this->timeCreate = (hour << 1) | (minute << 5) | (sec >> 1);
 
+	this->type = type;
 	this->startCluster = startCluster;
 	this->dataSize = dataSize;
 
 	this->size = 14 + nameSize + passSize;
+}
+
+char* Entry::toBytes() {
+	char* data = new char(size);
+
+	writeOffset(data, 0, (char*)&size, sizeof(size));
+	writeOffset(data, 1, (char*)&nameSize, sizeof(nameSize));
+	writeOffset(data, 2, (char*)&passSize, sizeof(passSize));
+	writeOffset(data, 3, (char*)&timeCreate, sizeof(timeCreate));
+	writeOffset(data, 5, (char*)&dateCreate, sizeof(dateCreate));
+	writeOffset(data, 7, (char*)&type, sizeof(type));
+	writeOffset(data, 8, (char*)&startCluster, sizeof(startCluster));
+	writeOffset(data, 10, (char*)&dataSize, sizeof(dataSize));
+	writeOffset(data, 14, (char*)name.c_str(), nameSize);
+	writeOffset(data, 14+nameSize, (char*)password.c_str(), passSize);
+
+	return data;
 }

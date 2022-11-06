@@ -7,7 +7,7 @@ using namespace std;
 class Entry
 {
 private:
-	uint16_t size; // kích thước cluster
+	uint8_t size; // kích thước cluster
 	char nameSize;
 	char passSize;
 	uint16_t timeCreate;
@@ -17,10 +17,9 @@ private:
 	int dataSize;
 	string name;
 	string password;
-	char* data;
 
 public:
 	void createEntry(string name, string password, int dataSize, int type, uint16_t startCluster);
-	//char* toBytes();
+	char* toBytes();
 };
 

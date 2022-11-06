@@ -32,6 +32,7 @@ public:
 	void writeCluster(int num, char* data);
 
 	unsigned int* readFat(); // đọc thông tin bảng FAT
+	void writeFat(unsigned int*a);
 	//vector<Entry> readRDET(); // đọc bảng RDET
 
 	bool resetPassWord(string newPW);

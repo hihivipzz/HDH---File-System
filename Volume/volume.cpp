@@ -1,6 +1,7 @@
 ﻿#include "volume.h"
 #include "utils.h"
 #include "RSA.h"
+#include "Entry.h"
 
 int fileEnd = UINT32_MAX;
 
@@ -138,6 +139,13 @@ unsigned int* Volume::readFat() {
 	return result;
 };
 
+void Volume:: writeFat(unsigned int* a) {
+	for (int i = 0; i < sectorPerFat; i++) {
+		char* temp = (char*)&a[i*512/4];
+		writeBlock(fatStartSector + i, temp);
+	}
+}
+
 char* Volume::readCluster(int num) {
 	char* result = new char[512 * sectorPerCluster];
 
@@ -189,6 +197,7 @@ void Volume::import(string path) {
 	string filename = path.substr(path.find_last_of('/') + 1); // xác định tên file từ đường dẫn cung cấp
 	// kích thước tên file
 	uint8_t sizeOfFilename = sizeof(filename.c_str()) - 1; // tính theo bytes
+	
 
 	// mật khẩu
 	string password = "";
@@ -205,30 +214,13 @@ void Volume::import(string path) {
 		cout << "Kich thuoc file qua lon de import!" << endl;
 		return;
 	}
-
-	uint16_t dateImport, timeImport;
-
-	//// Thiết lập ngày import vào
-	//struct tm newtime;
-	//time_t now = time(0);
-	//localtime_s(&newtime, &now);
-	//int Month = 1 + newtime.tm_mon; // tháng
-	//int Day = newtime.tm_mday; // ngày
-	//int Year = 1900 + newtime.tm_year - 2022; // năm sở dĩ -2022 vì các thư mục được lưu trên vol được tính từ 2022 trở đi
-	//dateImport = (Year << 9) | (Month << 5) | Day;
-
-	//// Thiết lập giờ import vào
-	//int sec = newtime.tm_sec; // giây
-	//int minute = newtime.tm_min; // phút
-	//int hour = newtime.tm_hour; // giờ
-	//timeImport = (hour << 1) | (minute << 5) | (sec >> 1);
-
-	// thiết lập trạng thái là file hay folder
+	//Tính số cluster file chiếm
+	int clusterOfFileData = ceil(sizeOfFile / 512 * sectorPerCluster);
+	//Loại FIle
 	int type = 0;
 
 	// tính kích thước entry của tệp tin này
 	uint16_t sizeOfEntry = 2 + 1 + 1 + 2 + 2 + 1 + 2 + 4 + sizeOfFilename + sizeOfPassword; // N
-
 	// số cluster mà Entry chiếm
 	uint16_t amountOfCluster = sizeOfEntry / bytePerSector + 1;  // M
 
@@ -238,6 +230,8 @@ void Volume::import(string path) {
 	// Bước 4:
 
 	// truy xuất RDET
+	int clusterEntry; // cluster của Entry
+	int offsetEntry; // offset của Entry trên cluster đó
 	vector<int> RDET_cluster;
 	RDET_cluster.push_back(rdetCluster);
 	while (1) {
@@ -253,7 +247,7 @@ void Volume::import(string path) {
 	bool flag = false;
 
 	int i = 0, j = 0;
-	while (i < RDET_cluster.size()) {
+	while (i < RDET_cluster.size() && !flag) {
 		temp = readCluster(i);
 		while (j < sectorPerCluster * 512) {
 			char val = *(char*)(&temp[j]);
@@ -274,8 +268,9 @@ void Volume::import(string path) {
 
 	// không đủ N byte liên tiếp
 	if (!flag) {
-		int indexClusterEmpy;
-		for (int i = 0; i < sizeof(FAT_table); i++) {
+		//Tìm cluster trống
+		int indexClusterEmpy = -1;
+		for (int i = 3; i < sizeof(FAT_table); i++) {
 			if (FAT_table[i] == 0) {
 				indexClusterEmpy = i;
 				break;
@@ -283,14 +278,69 @@ void Volume::import(string path) {
 		}
 
 		// mở rộng bảng RDET
+		if (indexClusterEmpy == -1) {
+			cout << "Khong du kich thuoc de luu file" << endl;
+		}
+		else {
+			FAT_table[RDET_cluster[RDET_cluster.size() - 1]] == indexClusterEmpy;
+			FAT_table[indexClusterEmpy] = fileEnd;
 
+			clusterEntry = indexClusterEmpy;
+			offsetEntry = 0;
+		}
+	}
+	else {
+		clusterEntry = RDET_cluster[i];
+		offsetEntry = j - sizeOfEntry + 1;
 	}
 
-	// thêm filename vào entry mới
 
-	// kiểm tra tên file đã tồn tại hay chưa
+	//Tìm cluster trống để lưu dữ liệu
+	vector<unsigned int> Data_cluster;
+	for (int i = 3; i < sizeof(FAT_table); i++) {
+		if (FAT_table[i] == 0) {
+			Data_cluster.push_back(i);
+			if (Data_cluster.size() == clusterOfFileData) {
+				break;
+			}
+		}
+	}
 
-	//
+	//TH ko du cluster
+	if (Data_cluster.size() < clusterOfFileData) {
+		cout << "Khong du khoang trong" << endl;
+		return;
+	}
+
+	//Điều chỉnh lại bảng FAT
+	for (int i = 0; i < Data_cluster.size() - 1; i++) {
+		FAT_table[i] = FAT_table[i + 1];
+	}
+	FAT_table[Data_cluster.size() - 1] = fileEnd;
+
+	//Ghi entry vào RDET
+	Entry e;
+	e.createEntry(filename, password, sizeOfFile, type, Data_cluster[0]); // Khoi tao Entry từ các dữ liệu đã lấy
+	char* cluster = readCluster(clusterEntry);
+	writeOffset(cluster, offsetEntry, e.toBytes(), sizeOfEntry);
+	writeCluster(clusterEntry, cluster);
+	delete[] cluster;
+
+	//Ghi lại bảng FAT vào vol
+	writeFat(FAT_table);
+	
+	//Ghi dữ liệu file vào cluster
+	for (int i = 0; i < Data_cluster.size(); i++) {
+		//Lấy dữ liệu file tương đương số byte 1 cluster
+		readFile.seekg(i * 512 * sectorPerCluster);
+		char* data = new char[512*sectorPerCluster];
+		readFile.read(data, 512 * sectorPerCluster);
+		
+		//Ghi vào cluster của vol
+		writeCluster(Data_cluster[i], data);
+
+		delete[]data;
+	}
 
 	readFile.close();
 }
