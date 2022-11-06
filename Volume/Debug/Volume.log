@@ -1,4 +1,25 @@
-﻿  volume.cpp
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(33,37): warning C4267: '=': conversion from 'size_t' to 'uint8_t', possible loss of data
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(164,37): warning C4267: '=': conversion from 'size_t' to 'uint8_t', possible loss of data
-  Volume.vcxproj -> D:\Study\Tailieu\HDH\Volume\HDH---File-System\Debug\Volume.exe
+﻿  BigInt.cpp
+  Caesar.cpp
+D:\HỌC TẬP\HK1 - NĂM 3\Hệ điều hành\doan-copy4\HDH---File-System\Volume\Caesar.cpp(20,20): warning C4018: '<': signed/unsigned mismatch
+D:\HỌC TẬP\HK1 - NĂM 3\Hệ điều hành\doan-copy4\HDH---File-System\Volume\Caesar.cpp(25,21): warning C4018: '<': signed/unsigned mismatch
+D:\HỌC TẬP\HK1 - NĂM 3\Hệ điều hành\doan-copy4\HDH---File-System\Volume\Caesar.cpp(39,20): warning C4018: '<': signed/unsigned mismatch
+D:\HỌC TẬP\HK1 - NĂM 3\Hệ điều hành\doan-copy4\HDH---File-System\Volume\Caesar.cpp(44,21): warning C4018: '<': signed/unsigned mismatch
+D:\HỌC TẬP\HK1 - NĂM 3\Hệ điều hành\doan-copy4\HDH---File-System\Volume\Caesar.cpp(82,21): warning C4018: '<': signed/unsigned mismatch
+D:\HỌC TẬP\HK1 - NĂM 3\Hệ điều hành\doan-copy4\HDH---File-System\Volume\Caesar.cpp(120,21): warning C4018: '<': signed/unsigned mismatch
+  Entry.cpp
+  main.cpp
+  RSA.cpp
+D:\HỌC TẬP\HK1 - NĂM 3\Hệ điều hành\doan-copy4\HDH---File-System\Volume\RSA.cpp(42,24): warning C4244: 'argument': conversion from '__int64' to 'const unsigned int', possible loss of data
+D:\HỌC TẬP\HK1 - NĂM 3\Hệ điều hành\doan-copy4\HDH---File-System\Volume\RSA.cpp(47,23): warning C4018: '<': signed/unsigned mismatch
+D:\HỌC TẬP\HK1 - NĂM 3\Hệ điều hành\doan-copy4\HDH---File-System\Volume\RSA.cpp(60,23): warning C4018: '<': signed/unsigned mismatch
+  utils.cpp
+  volume.cpp
+D:\HỌC TẬP\HK1 - NĂM 3\Hệ điều hành\doan-copy4\HDH---File-System\Volume\volume.cpp(33,37): warning C4267: '=': conversion from 'size_t' to 'uint8_t', possible loss of data
+D:\HỌC TẬP\HK1 - NĂM 3\Hệ điều hành\doan-copy4\HDH---File-System\Volume\volume.cpp(164,37): warning C4267: '=': conversion from 'size_t' to 'uint8_t', possible loss of data
+D:\HỌC TẬP\HK1 - NĂM 3\Hệ điều hành\doan-copy4\HDH---File-System\Volume\volume.cpp(199,12): warning C4244: 'initializing': conversion from 'std::streamoff' to 'int', possible loss of data
+D:\HỌC TẬP\HK1 - NĂM 3\Hệ điều hành\doan-copy4\HDH---File-System\Volume\volume.cpp(201,10): warning C4244: 'initializing': conversion from 'std::streamoff' to 'int', possible loss of data
+D:\HỌC TẬP\HK1 - NĂM 3\Hệ điều hành\doan-copy4\HDH---File-System\Volume\volume.cpp(256,11): warning C4018: '<': signed/unsigned mismatch
+D:\HỌC TẬP\HK1 - NĂM 3\Hệ điều hành\doan-copy4\HDH---File-System\Volume\volume.cpp(209,23): warning C4101: 'timeImport': unreferenced local variable
+D:\HỌC TẬP\HK1 - NĂM 3\Hệ điều hành\doan-copy4\HDH---File-System\Volume\volume.cpp(209,11): warning C4101: 'dateImport': unreferenced local variable
+  Generating Code...
+  Volume.vcxproj -> D:\HỌC TẬP\HK1 - NĂM 3\Hệ điều hành\doan-copy4\HDH---File-System\Debug\Volume.exe

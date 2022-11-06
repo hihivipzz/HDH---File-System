@@ -172,3 +172,125 @@ bool Volume::resetPassWord(string newPW) {
 
 	return true;
 }
+
+void Volume::import(string path) {
+
+	// Bước 2
+	fstream readFile;
+	readFile.open(path.c_str(), ios::binary | ios::in);
+
+	// lỗi: không thể mở file 
+	if (!readFile.is_open()) {
+		cout << "Duong dan khong hop le" << endl;
+		return;
+	}
+
+	// tên file
+	string filename = path.substr(path.find_last_of('/') + 1); // xác định tên file từ đường dẫn cung cấp
+	// kích thước tên file
+	uint8_t sizeOfFilename = sizeof(filename.c_str()) - 1; // tính theo bytes
+
+	// mật khẩu
+	string password = "";
+	// kích thước mật khẩu
+	uint8_t sizeOfPassword = 0; // mặc định ban đầu không có password
+
+	// tính kích thước file <=> kích thước dữ liệu 
+	int begin = readFile.tellg();
+	readFile.seekg(0, ios::end);
+	int end = readFile.tellg();
+	int sizeOfFile = end - begin; // sizeOfFile là kích thước của file cần import (đơn vị byte)
+	// vì kích thước volume tối đa là 4GB nên khi sizeOfFile > 4GB = 4,294,967,296 sẽ không import 
+	if (sizeOfFile > 4294967296) {
+		cout << "Kich thuoc file qua lon de import!" << endl;
+		return;
+	}
+
+	uint16_t dateImport, timeImport;
+
+	//// Thiết lập ngày import vào
+	//struct tm newtime;
+	//time_t now = time(0);
+	//localtime_s(&newtime, &now);
+	//int Month = 1 + newtime.tm_mon; // tháng
+	//int Day = newtime.tm_mday; // ngày
+	//int Year = 1900 + newtime.tm_year - 2022; // năm sở dĩ -2022 vì các thư mục được lưu trên vol được tính từ 2022 trở đi
+	//dateImport = (Year << 9) | (Month << 5) | Day;
+
+	//// Thiết lập giờ import vào
+	//int sec = newtime.tm_sec; // giây
+	//int minute = newtime.tm_min; // phút
+	//int hour = newtime.tm_hour; // giờ
+	//timeImport = (hour << 1) | (minute << 5) | (sec >> 1);
+
+	// thiết lập trạng thái là file hay folder
+	int type = 0;
+
+	// tính kích thước entry của tệp tin này
+	uint16_t sizeOfEntry = 2 + 1 + 1 + 2 + 2 + 1 + 2 + 4 + sizeOfFilename + sizeOfPassword; // N
+
+	// số cluster mà Entry chiếm
+	uint16_t amountOfCluster = sizeOfEntry / bytePerSector + 1;  // M
+
+	// Bước 3: đọc bảng FAT vào bộ nhớ
+	unsigned int* FAT_table = this->readFat();
+
+	// Bước 4:
+
+	// truy xuất RDET
+	vector<int> RDET_cluster;
+	RDET_cluster.push_back(rdetCluster);
+	while (1) {
+		if (FAT_table[RDET_cluster[RDET_cluster.size() - 1]] == fileEnd) {
+			break;
+		}
+
+		RDET_cluster.push_back(FAT_table[RDET_cluster[RDET_cluster.size() - 1]]);
+	}
+
+	char* temp = NULL;
+	int countByteEmpty = 0;
+	bool flag = false;
+
+	int i = 0, j = 0;
+	while (i < RDET_cluster.size()) {
+		temp = readCluster(i);
+		while (j < sectorPerCluster * 512) {
+			char val = *(char*)(&temp[j]);
+			if (val == 0) {
+				countByteEmpty++;
+				if (countByteEmpty == sizeOfEntry) {
+					flag = true;
+					break;
+				}
+				j++;
+			}
+			else {
+				j = j + val;
+			}
+		}
+		i++;
+	}
+
+	// không đủ N byte liên tiếp
+	if (!flag) {
+		int indexClusterEmpy;
+		for (int i = 0; i < sizeof(FAT_table); i++) {
+			if (FAT_table[i] == 0) {
+				indexClusterEmpy = i;
+				break;
+			}
+		}
+
+		// mở rộng bảng RDET
+
+	}
+
+	// thêm filename vào entry mới
+
+	// kiểm tra tên file đã tồn tại hay chưa
+
+	//
+
+	readFile.close();
+}

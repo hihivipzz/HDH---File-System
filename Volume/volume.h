@@ -36,7 +36,7 @@ public:
 
 	bool resetPassWord(string newPW);
 
-	//void import(string path);
+	void import(string path);
 	//void outport(string file, string outportPath);
 
 	//void deleteFile(string file);
