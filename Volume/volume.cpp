@@ -68,6 +68,8 @@ void Volume::init(int size, string password) {
 	for (int i = 2; i < sectors; i++) {
 		writeBlock(i, buffer);
 	}
+
+	data.close();
 }
 
 bool Volume::open(string passwordInput) {
@@ -133,4 +135,18 @@ int* Volume::readFat() {
 	}
 	
 	return result;
+};
+
+char* Volume::readCluster(int num) {
+	char* result = new char[512 * sectorPerCluster];
+
+	this->data.seekg(512*(fatStartSector + sectorPerFat * numberOfFat + (num - 3) * sectorPerCluster));
+	data.read(result, 512 * sectorPerCluster);
+
+	return result;
+};
+
+void Volume::writeCluster(int num, char* data) {
+	this->data.seekp(512*(fatStartSector + sectorPerFat * numberOfFat + (num - 3) * sectorPerCluster));
+	this->data.write(data, 512 * sectorPerCluster);
 };
