@@ -1,9 +1,10 @@
 #include<iostream>
 #include<string>
 #include"utils.h"
+#include "RSA.h"
 using namespace std;
 
-void main() {
+int main() {
 	/*char* a = new char[18];
 	int i = 123123;
 	char* arr = new char[4];
@@ -28,8 +29,14 @@ void main() {
 		cout << a[i] << endl;
 	}*/
 	
-	Menu1();
+	/*Menu1();
 
 	Volume v;
-	v.open("asdasd");
+	v.open("asdasd");*/
+	string pwd_mahoa = RSA_pwd::encryptPassword("xyzeqrt+-092");
+	cout << pwd_mahoa << endl;
+
+	string pwd_giaima = RSA_pwd::decryptPassword(pwd_mahoa);
+	cout << pwd_giaima << endl;
+	return 0;
 }

@@ -127,13 +127,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BigInt.h" />
+    <ClInclude Include="Caesar.h" />
     <ClInclude Include="Entry.h" />
+    <ClInclude Include="RSA.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="volume.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BigInt.cpp" />
+    <ClCompile Include="Caesar.cpp" />
     <ClCompile Include="Entry.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="RSA.cpp" />
     <ClCompile Include="utils.cpp" />
     <ClCompile Include="volume.cpp" />
   </ItemGroup>
