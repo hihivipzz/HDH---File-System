@@ -1,34 +1,3 @@
-﻿  Entry.cpp
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\Entry.h(5,11): error C3646: 'size': unknown override specifier
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\Entry.h(5,15): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\Entry.h(8,11): error C3646: 'timeCreate': unknown override specifier
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\Entry.h(8,21): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\Entry.h(9,11): error C3646: 'dateCreate': unknown override specifier
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\Entry.h(9,21): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\Entry.h(11,11): error C3646: 'startCluster': unknown override specifier
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\Entry.h(11,23): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\Entry.h(13,9): error C3646: 'name': unknown override specifier
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\Entry.h(13,13): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\Entry.h(14,9): error C3646: 'password': unknown override specifier
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\Entry.h(14,17): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\Entry.h(19,1): error C2143: syntax error: missing ';' before '}'
-  main.cpp
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\Entry.h(13,9): error C3646: 'name': unknown override specifier
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\Entry.h(13,13): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\Entry.h(14,9): error C3646: 'password': unknown override specifier
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\Entry.h(14,17): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\Entry.h(19,1): error C2143: syntax error: missing ';' before '}'
-  utils.cpp
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\Entry.h(13,9): error C3646: 'name': unknown override specifier
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\Entry.h(13,13): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\Entry.h(14,9): error C3646: 'password': unknown override specifier
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\Entry.h(14,17): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\Entry.h(19,1): error C2143: syntax error: missing ';' before '}'
-  volume.cpp
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\Entry.h(13,9): error C3646: 'name': unknown override specifier
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\Entry.h(13,13): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\Entry.h(14,9): error C3646: 'password': unknown override specifier
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\Entry.h(14,17): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\Entry.h(19,1): error C2143: syntax error: missing ';' before '}'
+﻿  volume.cpp
 D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(33,37): warning C4267: '=': conversion from 'size_t' to 'uint8_t', possible loss of data
-  Generating Code...
+  Volume.vcxproj -> D:\Study\Tailieu\HDH\Volume\HDH---File-System\Debug\Volume.exe

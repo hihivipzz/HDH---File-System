@@ -106,6 +106,7 @@ bool Volume::open(string passwordInput) {
 
 char* Volume::readBlock(int num) {
 	char* result = new char[512];
+
 	this->data.seekg(num* 512);
 	this->data.read(result, 512);
 
@@ -118,20 +119,20 @@ void Volume::writeBlock(int num, char* data) {
 	this->data.write(data, 512);
 };
 
-int* Volume::readFat() {
-	int* result = new int(numberOfCluters + 3);
+unsigned int* Volume::readFat() {
+	unsigned int* result = new unsigned int (numberOfCluters + 3);
 	int index = 0;
 
 	for (int n = 0; n < sectorPerFat; n++) {
 		char*buffer = readBlock(fatStartSector + n);
 		for (int i = 0; i < 512 / 4; i+=4) {
-			result[index] = *(int*)buffer[i];
+			result[index] = *(unsigned int*)&buffer[i];
 			index++;
 			if (index = numberOfCluters + 3 - 1) {
 				break;
 			}
 		}
-		
+		delete [] buffer;
 	}
 	
 	return result;

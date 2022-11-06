@@ -31,7 +31,7 @@ public:
 	char* readCluster(int num);
 	void writeCluster(int num, char* data);
 
-	int* readFat(); // đọc thông tin bảng FAT
+	unsigned int* readFat(); // đọc thông tin bảng FAT
 	//vector<Entry> readRDET(); // đọc bảng RDET
 
 	//bool resetPassWord();
