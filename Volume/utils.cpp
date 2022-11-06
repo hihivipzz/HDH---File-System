@@ -24,6 +24,7 @@ void Menu1() {
 			createVolume();
 			break;
 		case 2:
+			MenuPasswordVolume();
 			break;
 		case 0:
 			return;
@@ -53,6 +54,57 @@ void createVolume() {
 	Volume v;
 	v.init(size, password);
 
+}
+
+void MenuPasswordVolume() {
+	string passWord;
+	cout << "Nhap mat khau cho Volume: ";
+	cin >> passWord;
+	Volume v;
+	if (!v.open(passWord)) {
+		return;
+	}
+
+	string passOld, passNew1, passNew2;
+	int choice;
+	while (1) {
+		cout << "1. Doi Mat Khau" << endl;
+		cout << "2. Kiem tra mat khau" << endl;
+		cout << "Chon chuc nang muon thuc hien: ";
+		cin >> choice;
+
+		switch (choice)
+		{
+		case 1:
+			
+			cout << "Nhap mat khau cu: ";
+			cin >> passOld;
+			if (passOld != passWord) {
+				cout << "Mat khau khong dung!" << endl;
+				break;
+			}
+			cout << "Nhap mat khau moi: ";
+			cin >> passNew1;
+			cout << "Nhap lai mat khau moi: ";
+			cin >> passNew2;
+			if (passNew1 == passNew2) {
+				v.resetPassWord(passNew1);
+				cout << "Doi mat khau thanh cong" << endl;
+			}
+			else {
+				cout << "Mat khau khong trung khop" << endl;
+			}
+			break;
+		case 2:
+			cout << "Mat khau hien tai: " << passWord << endl;
+			break;
+		case 0:
+			return;
+		default:
+			cout << "Khong hop le" << endl;
+			break;
+		}
+	}
 }
 
 void importFileToVolume() {

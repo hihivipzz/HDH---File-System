@@ -151,3 +151,24 @@ void Volume::writeCluster(int num, char* data) {
 	this->data.seekp(512*(fatStartSector + sectorPerFat * numberOfFat + (num - 3) * sectorPerCluster));
 	this->data.write(data, 512 * sectorPerCluster);
 };
+
+bool Volume::resetPassWord(string newPW) {
+	char* buffer = readBlock(0);
+	//Xoa mat khau cu tren bootsector
+	for (int i = 0; i < passWordLenght; i++) {
+		buffer[21 + i] = 0;
+	}
+
+	//Luu mat khau moi vao bootsector
+	string pwd_mahoa = RSA_pwd::encryptPassword(newPW);
+	passWordLenght = pwd_mahoa.length();
+	passWord = pwd_mahoa;
+	writeOffset(buffer, 20, (char*)&passWordLenght, sizeof(passWordLenght));
+	writeOffset(buffer, 21, (char*)(passWord.c_str()), passWordLenght);
+
+
+	writeBlock(0, buffer);
+	delete[] buffer;
+
+	return true;
+}
