@@ -26,6 +26,11 @@ void Menu1() {
 		case 2:
 			MenuPasswordVolume();
 			break;
+		case 3:
+			/*vector<Entry> listEntry = Volume::readRDET();
+			Entry::Display(listEntry);
+			system("pause");
+			break;*/
 		case 0:
 			return;
 		default:

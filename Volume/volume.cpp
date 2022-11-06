@@ -344,3 +344,43 @@ void Volume::import(string path) {
 
 	readFile.close();
 }
+
+bool Volume::outport(FILE* f, string filename, vector<Entry*>& listEntry, string outportPath) {
+	bool found = false;
+	Entry* exportEntry = nullptr;
+	int size = exportEntry->getDataSize();
+
+	for (int i = 0; i < listEntry.size(); i++) {
+		if (filename == listEntry[i]->getFileName()) {// ktra file co ton tai bang cach ktra ten trong list ten
+			found = true;
+			exportEntry = listEntry[i];
+			break;
+		}
+	}
+
+	if (!found) return false;
+
+	string password;
+	cout << "Nhap mat khau file/folder can export: ";
+	getline(cin, password);
+	if (!exportEntry->checkPassword(password))
+		return false;
+
+	// Neu la file
+	FILE* target = nullptr;
+	errno_t err = fopen_s(&target, outportPath.c_str(), "wb+");
+
+	char buffer[BUFFER_SIZE];
+	int n = size / BUFFER_SIZE;
+	for (int i = 0; i < n; ++i) {
+		fread(buffer, 1, BUFFER_SIZE, f);
+		fwrite(buffer, 1, BUFFER_SIZE, target);
+	}
+	fread(buffer, 1, size % BUFFER_SIZE, f);
+	fwrite(buffer, 1, size % BUFFER_SIZE, target);
+	fclose(target);
+
+	// Neu la folder: chua xu ly
+
+	return true;
+}
