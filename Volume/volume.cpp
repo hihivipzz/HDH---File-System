@@ -1,5 +1,8 @@
 ﻿#include "volume.h"
 #include "utils.h"
+#include "RSA.h"
+
+int fileEnd = UINT32_MAX;
 
 void Volume::init(int size, string password) {
 	data.open("MyFS.dat", ios::out | ios::binary);
@@ -25,10 +28,10 @@ void Volume::init(int size, string password) {
 	numberOfCluters = (sectors - fatStartSector - numberOfFat) / (4 * numberOfFat / 512 + sectorPerCluster);//4 là số byte quản lý 1 cluster
 	sectorPerFat = (4 * numberOfCluters) / 512 + 1;
 
-	publicKey = 11;
-	//mã hóa password
-	//passWordLenght = 
-	//passWord = 
+	publicKey = 17;
+	string pwd_mahoa = RSA_pwd::encryptPassword(password);
+	passWordLenght = pwd_mahoa.length();
+	passWord = pwd_mahoa;
 
 	//Ghi các thông tin vào offset tương ứng
 	char* buffer = new char[512];
@@ -44,21 +47,33 @@ void Volume::init(int size, string password) {
 	writeOffset(buffer, 11, (char*)&rdetCluster, sizeof(rdetCluster));
 	writeOffset(buffer, 15, (char*)&numberOfCluters, sizeof(numberOfCluters));
 	writeOffset(buffer, 19, (char*)&publicKey, sizeof(publicKey));
+	writeOffset(buffer, 20, (char*)&passWordLenght, sizeof(passWordLenght));
+	writeOffset(buffer, 21, (char*)(passWord.c_str()), passWordLenght);
 
 	writeBlock(0, buffer); // ghi sector 0
 
 	for (int i = 0; i < 512; i++) {
 		buffer[i] = 0;
 	}
+	
+	//Ghi File RDET vào bảng FAT
+	writeOffset(buffer, 4 * rdetCluster, (char*)&fileEnd, 4);
+	writeBlock(1, buffer);
+
+	for (int i = 0; i < 512; i++) {
+		buffer[i] = 0;
+	}
+
 	//Ghi các sector còn lại 
-	for (int i = 1; i < sectors; i++) {
+	for (int i = 2; i < sectors; i++) {
 		writeBlock(i, buffer);
 	}
 }
 
-bool Volume::open(string password) {
+bool Volume::open(string passwordInput) {
 	data.open("MyFS.dat", ios::binary | ios::out | ios::in);
 	if (!data.is_open()) {
+		cout << "Volume chua khoi tao" << endl;
 		return false;
 	}
 
@@ -73,6 +88,15 @@ bool Volume::open(string password) {
 	rdetCluster = *(unsigned int*)&buffer[11];
 	numberOfCluters = *(unsigned int*)&buffer[15];
 	publicKey = buffer[19];
+	passWordLenght = buffer[20];
+	for (int i = 0; i < passWordLenght; i++) {
+		passWord += buffer[21 + i];
+	}
+	string pwd_giaima = RSA_pwd::decryptPassword(passWord);
+	if (pwd_giaima != passwordInput) {
+		cout << "Mat khau khong dung" << endl;
+		return false;
+	}
 
 	delete buffer;
 	return true;
@@ -90,4 +114,23 @@ char* Volume::readBlock(int num) {
 void Volume::writeBlock(int num, char* data) {
 	this->data.seekg(num * 512);
 	this->data.write(data, 512);
+};
+
+int* Volume::readFat() {
+	int* result = new int(numberOfCluters + 3);
+	int index = 0;
+
+	for (int n = 0; n < sectorPerFat; n++) {
+		char*buffer = readBlock(fatStartSector + n);
+		for (int i = 0; i < 512 / 4; i+=4) {
+			result[index] = *(int*)buffer[i];
+			index++;
+			if (index = numberOfCluters + 3 - 1) {
+				break;
+			}
+		}
+		
+	}
+	
+	return result;
 };

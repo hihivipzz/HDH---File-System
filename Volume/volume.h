@@ -28,8 +28,10 @@ public:
 
 	char* readBlock(int num); //Doc sector thu num (Tra ve day 512b)
 	void writeBlock(int num, char* data); //ghi data vao sector ( data la day 512 byte)
+	char* readCluster(int num);
+	void writeCluster(int num, char* data);
 
-	//int* readFat(); // đọc thông tin bảng FAT
+	int* readFat(); // đọc thông tin bảng FAT
 	//vector<Entry> readRDET(); // đọc bảng RDET
 
 	//bool resetPassWord();

@@ -62,6 +62,7 @@ void importFileToVolume() {
 	Volume v;
 	if (!v.open(passWord)) {
 		cout << "Volume chua duoc tao hoac mat khau khong dung" << endl;
+		return;
 	}
 	
 }
