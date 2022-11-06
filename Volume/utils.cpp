@@ -51,12 +51,25 @@ void createVolume() {
 	cin >> password;
 
 	Volume v;
+	v.init(size, password);
 
 }
 
 void importFileToVolume() {
+	string passWord;
+	cout << "Nhap mat khau cho Volume: ";
+	cin >> passWord;
 	Volume v;
+	if (!v.open(passWord)) {
+		cout << "Volume chua duoc tao hoac mat khau khong dung" << endl;
+	}
 	
+}
+
+void writeOffset(char* buffer, int offSet, char* data, int n) {
+	for (int i = 0; i < n; i++) {
+		buffer[offSet + i] = data[i];
+	}
 }
 
 

@@ -4,7 +4,7 @@
 using namespace std;
 
 void main() {
-	char* a = new char[18];
+	/*char* a = new char[18];
 	int i = 123123;
 	char* arr = new char[4];
 	arr[0] = 'a';
@@ -26,7 +26,10 @@ void main() {
 	f.read(a, 4);
 	for (int i = 0; i < 5; i++) {
 		cout << a[i] << endl;
-	}
+	}*/
 	
-	//Menu1();
+	Menu1();
+
+	Volume v;
+	v.open("asdasd");
 }
