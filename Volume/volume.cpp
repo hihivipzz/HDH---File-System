@@ -345,7 +345,7 @@ void Volume::import(string path) {
 	readFile.close();
 }
 
-bool Volume::outport(FILE* f, string filename, vector<Entry*>& listEntry, string outportPath) {
+bool Volume::outport(string filename, vector<Entry*>& listEntry, string outportPath) {
 	bool found = false;
 	Entry* exportEntry = nullptr;
 	int size = exportEntry->getDataSize();
@@ -370,17 +370,67 @@ bool Volume::outport(FILE* f, string filename, vector<Entry*>& listEntry, string
 	FILE* target = nullptr;
 	errno_t err = fopen_s(&target, outportPath.c_str(), "wb+");
 
-	char buffer[BUFFER_SIZE];
-	int n = size / BUFFER_SIZE;
-	for (int i = 0; i < n; ++i) {
-		fread(buffer, 1, BUFFER_SIZE, f);
-		fwrite(buffer, 1, BUFFER_SIZE, target);
+	unsigned int* FAT_table = this->readFat();
+
+	vector<int> cluster_list; // luu vi tri cac cluster data
+	cluster_list.push_back(FAT_table[exportEntry->getStartCluster()]);
+	while (cluster_list.back() != 4294967295) { // khac FFFFFFFF
+		cluster_list.push_back(FAT_table[cluster_list.back()]);
 	}
-	fread(buffer, 1, size % BUFFER_SIZE, f);
-	fwrite(buffer, 1, size % BUFFER_SIZE, target);
+	cluster_list.push_back(FAT_table[cluster_list.back()]);
+
+
+	for (int i = 0; i < cluster_list.size(); ++i) {
+		char* buffer = new char[BUFFER_SIZE];
+		buffer = readCluster(cluster_list[i]);
+		fwrite(buffer, 1, BUFFER_SIZE, target);
+		delete[] buffer;
+	}
+
 	fclose(target);
 
 	// Neu la folder: chua xu ly
 
 	return true;
+}
+
+bool Volume::deleteFile(string filename, vector<Entry*>& listEntry) {
+	bool found = false;
+	Entry* deleteEntry = nullptr;
+	int size = deleteEntry->getDataSize();
+
+	for (int i = 0; i < listEntry.size(); i++) {
+		if (filename == listEntry[i]->getFileName()) {// ktra file co ton tai bang cach ktra ten trong list ten
+			found = true;
+			deleteEntry = listEntry[i];
+			break;
+		}
+	}
+
+	if (!found) return false;
+
+	string password;
+	cout << "Nhap mat khau file/folder can export: ";
+	getline(cin, password);
+	if (!deleteEntry->checkPassword(password))
+		return false;
+
+	unsigned int* FAT_table = this->readFat();
+
+	vector<int> cluster_list; // luu vi tri cac cluster data
+	cluster_list.push_back(FAT_table[deleteEntry->getStartCluster()]);
+	while (cluster_list.back() != 4294967295) { // khac FFFFFFFF
+		cluster_list.push_back(FAT_table[cluster_list.back()]);
+	}
+	cluster_list.push_back(FAT_table[cluster_list.back()]);
+
+	// Cap nhat lai bang FAT
+	for (int i = 0; i < cluster_list.size(); ++i) {
+		FAT_table[cluster_list[i]] = 1;
+	}
+
+	// Cap nhat lai RDET
+
+	// Cap nhat lai Volume
+
 }

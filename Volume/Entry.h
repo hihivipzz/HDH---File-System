@@ -4,7 +4,7 @@
 #include <ctime>
 using namespace std;
 
-const int BUFFER_SIZE = 512;
+
 class Entry
 {
 private:
@@ -24,6 +24,7 @@ public:
 	char* toBytes();
 	string getFileName();
 	int getDataSize();
+	uint16_t getStartCluster();
 	void read(FILE* f);
 	void Display(vector<Entry> listEntry);// In ten cac file
 	bool checkPassword(string password);
