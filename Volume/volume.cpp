@@ -182,8 +182,7 @@ bool Volume::resetPassWord(string newPW) {
 void Volume::updatePassword(string filename) {
 	string oldPassword, newPassword;
 	bool isExist = false;
-	//vector<Entry> listEntry = this->readRDET();
-	vector<Entry> listEntry;
+	vector<Entry> listEntry = this->readRDET();
 	Entry EntryOfFilename;
 
 	// check file name tồn tại hay không nếu tồn tại thì lấy entry đó ra
@@ -202,6 +201,17 @@ void Volume::updatePassword(string filename) {
 
 	unsigned int* FAT_table = this->readFat();
 
+	vector<int> RDET_cluster;
+	RDET_cluster.push_back(rdetCluster);
+
+	while (1) {
+		if (FAT_table[RDET_cluster[RDET_cluster.size() - 1]] == fileEnd) {
+			break;
+		}
+
+		RDET_cluster.push_back(FAT_table[RDET_cluster[RDET_cluster.size() - 1]]);
+	}
+
 	// TH khong co password
 	if (EntryOfFilename.getPassword() == "") {
 		// nhap mat khau
@@ -211,11 +221,163 @@ void Volume::updatePassword(string filename) {
 		// tính lại kích thước Entry do kích thước password đã thay đổi
 		uint8_t newSizeOfEntry = EntryOfFilename.getSize() - EntryOfFilename.getPassSize() + newPassword.length();
 
-		// Tìm vị trí lưu Entry mới 
+		//// tạo Entry mới
+		Entry newEntry;
+		newEntry.createEntry(filename, newPassword, EntryOfFilename.getDataSize(), EntryOfFilename.getType(), EntryOfFilename.getStartCluster());
 
-		// cập nhật Entry vào RDET
+		int countMoreEmpty = 0;
+		int isEnough = false;
+		int byteStartWrite;
+		for (int i = 0; i < RDET_cluster.size(); i++) {
+			char* clusterData = readCluster(RDET_cluster[i]);
+			int j = 0;
+			while (j < 512 * sectorPerCluster) {
+				char val = *(char*)(&clusterData[j]);
+				if (val == 0) {
+					j++;
+				}
+				else {
+					Entry entry;
+					entry.readEntry(&clusterData[j]);
+					if (entry.getFileName() == filename && entry.getSize() == EntryOfFilename.getSize()) {
+						// kiểm tra thử phía sau có còn đủ không gian để nối vào lưu tiếp hay không
+						countMoreEmpty = val;
+						byteStartWrite = j;
+						while (1) {
+							char elm = *(char*)(&clusterData[j]);
+							if (elm == 0) {
+								countMoreEmpty++;
+								if (countMoreEmpty == newSizeOfEntry) {
+									isEnough = true;
+									break;
+								}
+							}
+							j++;
 
-		// ghi giá 0 lên các byte của Entry cũ
+						}
+
+						if (isEnough) {
+							char* cluster = readCluster(RDET_cluster[i]);
+							writeOffset(cluster, byteStartWrite, newEntry.toBytes(), newSizeOfEntry);
+							writeCluster(RDET_cluster[i], cluster);
+						}
+						break;
+					}
+					j += val;
+				}
+			}
+			delete[] clusterData;
+		}
+
+		if (!isEnough) {
+			// Tìm vị trí lưu Entry mới 
+			int clusterEntry; // cluster của Entry
+			int offsetEntry; // offset của Entry trên cluster đó
+
+			//// truy xuất RDET
+
+			char* temp = NULL;
+			int countByteEmpty = 0;
+			bool flag = false;
+
+			int i = 0, j = 0;
+			while (i < RDET_cluster.size()) {
+				temp = readCluster(RDET_cluster[i]);
+				while (j < sectorPerCluster * 512) {
+					char val = *(char*)(&temp[j]);
+					if (val == 0) {
+						countByteEmpty++;
+						if (countByteEmpty == newSizeOfEntry) {
+							flag = true;
+							break;
+						}
+						j++;
+					}
+					else {
+						j = j + val;
+					}
+				}
+				delete[] temp;
+
+				if (!flag) {
+					i++;
+				}
+				else {
+					break;
+				}
+			}
+
+
+			// không đủ N byte liên tiếp
+			if (!flag) {
+				//Tìm cluster trống
+				int indexClusterEmpty = -1;
+				for (int i = 3; i < numberOfCluters + 3; i++) {
+					if (FAT_table[i] == 0) {
+						indexClusterEmpty = i;
+						break;
+					}
+				}
+
+				// mở rộng bảng RDET
+				if (indexClusterEmpty == -1) {
+					cout << "Khong du kich thuoc de luu file" << endl;
+					return;
+				}
+				else {
+					FAT_table[RDET_cluster[RDET_cluster.size() - 1]] = indexClusterEmpty;
+					FAT_table[indexClusterEmpty] = fileEnd;
+
+					clusterEntry = indexClusterEmpty;
+					offsetEntry = 0;
+				}
+			}
+			else {
+				clusterEntry = RDET_cluster[i];
+				offsetEntry = j - newSizeOfEntry + 1;
+			}
+
+			// ghi giá 0 lên các byte của Entry cũ
+			for (int i = 0; i < RDET_cluster.size(); i++) {
+				char* clusterData = readCluster(RDET_cluster[i]);
+				int j = 0;
+				while (j < 512 * sectorPerCluster) {
+					char val = *(char*)(&clusterData[j]);
+					if (val == 0) {
+						j++;
+					}
+					else {
+						Entry entry;
+						entry.readEntry(&clusterData[j]);
+						if (entry.getFileName() == filename && entry.getSize() == EntryOfFilename.getSize()) {
+							char* emptyEntry = entry.toBytes();
+							for (int a = 0; a < entry.getSize(); a++) {
+								emptyEntry[a] = 0;
+							}
+
+							// ghi toàn bộ giá trị 0 cho các byte của Entry cũ
+							char* cluster = readCluster(RDET_cluster[i]);
+							writeOffset(cluster, j, emptyEntry, entry.getSize());
+							writeCluster(RDET_cluster[i], cluster);
+
+							delete[] cluster, clusterData, emptyEntry;
+							break;
+						}
+						j += val;
+					}
+				}
+				delete[] clusterData;
+			}
+
+			// cập nhật Entry vào RDET
+			char* cluster = readCluster(clusterEntry);
+			writeOffset(cluster, offsetEntry, newEntry.toBytes(), newSizeOfEntry);
+			writeCluster(clusterEntry, cluster);
+			delete[] cluster;
+
+			// cập nhật bảng FAT
+			writeFat(FAT_table);
+		}
 	}
 	else { // TH co mat khau
 		cout << "Vui long nhap mat khau cu: ";
@@ -231,27 +393,206 @@ void Volume::updatePassword(string filename) {
 		cout << "Vui long nhap mat khau moi: ";
 		getline(cin, newPassword);
 
+		// Tao Entry với những thông tin mới
+		Entry newEntry;
+		newEntry.createEntry(filename, newPassword, EntryOfFilename.getDataSize(), EntryOfFilename.getType(), EntryOfFilename.getStartCluster());
+
 		//TH password mới có cùng kích thước
 		if (newPassword.length() == EntryOfFilename.getPassword().length()) {
-
-			// Tao Entry với những thông tin mới
-			Entry newEntry;
-			newEntry.createEntry(filename, newPassword, EntryOfFilename.getDataSize(), EntryOfFilename.getType(), EntryOfFilename.getStartCluster());
-
 			// cập nhật Entry vào RDET
+			for (int i = 0; i < RDET_cluster.size(); i++) {
+				char* clusterData = readCluster(RDET_cluster[i]);
+				int j = 0;
+				while (j < 512 * sectorPerCluster) {
+					char val = *(char*)(&clusterData[j]);
+					if (val == 0) {
+						j++;
+					}
+					else {
+						Entry entry;
+						entry.readEntry(&clusterData[j]);
+						if (entry.getFileName() == filename && entry.getSize() == EntryOfFilename.getSize()) {
+							char* cluster = readCluster(RDET_cluster[i]);
+							writeOffset(cluster, j, newEntry.toBytes(), entry.getSize());
+							writeCluster(RDET_cluster[i], cluster);
 
-			// ghi giá 0 lên các byte của Entry cũ
-
+							delete[] cluster, clusterData;
+							break;
+						}
+						j += val;
+					}
+				}
+				delete[] clusterData;
+			}
 		}
 		else { // TH mật khẩu mới khác kích thước
 			// tính lại kích thước Entry do kích thước password đã thay đổi
 			uint8_t newSizeOfEntry = EntryOfFilename.getSize() - EntryOfFilename.getPassSize() + newPassword.length();
 
-			// Tìm vị trí lưu Entry mới 
+			// cap nhat RDET
+			int countMoreEmpty = 0;
+			int isEnough = false;
+			int byteStartWrite;
+			for (int i = 0; i < RDET_cluster.size(); i++) {
+				char* clusterData = readCluster(RDET_cluster[i]);
+				int j = 0;
+				while (j < 512 * sectorPerCluster) {
+					char val = *(char*)(&clusterData[j]);
+					if (val == 0) {
+						j++;
+					}
+					else {
+						Entry entry;
+						entry.readEntry(&clusterData[j]);
+						if (entry.getFileName() == filename && entry.getSize() == EntryOfFilename.getSize()) {
+							// kiểm tra thử phía sau có còn đủ không gian để nối vào lưu tiếp hay không
+							if (entry.getSize() < newSizeOfEntry) {
+								countMoreEmpty = val;
+								byteStartWrite = j;
+								while (1) {
+									char elm = *(char*)(&clusterData[j]);
+									if (elm == 0) {
+										countMoreEmpty++;
+										if (countMoreEmpty == newSizeOfEntry) {
+											isEnough = true;
+											break;
+										}
+									}
+									j++;
+								}
 
-			// cập nhật Entry vào RDET
+								if (isEnough) {
+									char* cluster = readCluster(RDET_cluster[i]);
+									writeOffset(cluster, byteStartWrite, newEntry.toBytes(), newSizeOfEntry);
+									writeCluster(RDET_cluster[i], cluster);
 
-			// ghi giá 0 lên các byte của Entry cũ
+									delete[] cluster, clusterData;
+								}
+							}
+							else {
+								isEnough = true;
+								char* cluster = readCluster(RDET_cluster[i]);
+								writeOffset(cluster, j, newEntry.toBytes(), newSizeOfEntry);
+								writeCluster(RDET_cluster[i], cluster);
+
+								delete[] cluster, clusterData;
+							}
+							break;
+						}
+						j += val;
+					}
+				}
+				delete[] clusterData;
+			}
+
+			if (!isEnough) {
+				// Tìm vị trí lưu Entry mới 
+				int clusterEntry; // cluster của Entry
+				int offsetEntry; // offset của Entry trên cluster đó
+
+				//// truy xuất RDET
+
+				char* temp = NULL;
+				int countByteEmpty = 0;
+				bool flag = false;
+
+				int i = 0, j = 0;
+				while (i < RDET_cluster.size()) {
+					temp = readCluster(RDET_cluster[i]);
+					while (j < sectorPerCluster * 512) {
+						char val = *(char*)(&temp[j]);
+						if (val == 0) {
+							countByteEmpty++;
+							if (countByteEmpty == newSizeOfEntry) {
+								flag = true;
+								break;
+							}
+							j++;
+						}
+						else {
+							j = j + val;
+						}
+					}
+					delete[] temp;
+
+					if (!flag) {
+						i++;
+					}
+					else {
+						break;
+					}
+				}
+
+				// không đủ N byte liên tiếp
+				if (!flag) {
+					//Tìm cluster trống
+					int indexClusterEmpty = -1;
+					for (int i = 3; i < numberOfCluters + 3; i++) {
+						if (FAT_table[i] == 0) {
+							indexClusterEmpty = i;
+							break;
+						}
+					}
+
+					// mở rộng bảng RDET
+					if (indexClusterEmpty == -1) {
+						cout << "Khong du kich thuoc de luu file" << endl;
+						return;
+					}
+					else {
+						FAT_table[RDET_cluster[RDET_cluster.size() - 1]] = indexClusterEmpty;
+						FAT_table[indexClusterEmpty] = fileEnd;
+
+						clusterEntry = indexClusterEmpty;
+						offsetEntry = 0;
+					}
+				}
+				else {
+					clusterEntry = RDET_cluster[i];
+					offsetEntry = j - newSizeOfEntry + 1;
+				}
+
+				// ghi giá 0 lên các byte của Entry cũ
+				for (int i = 0; i < RDET_cluster.size(); i++) {
+					char* clusterData = readCluster(RDET_cluster[i]);
+					int j = 0;
+					while (j < 512 * sectorPerCluster) {
+						char val = *(char*)(&clusterData[j]);
+						if (val == 0) {
+							j++;
+						}
+						else {
+							Entry entry;
+							entry.readEntry(&clusterData[j]);
+							if (entry.getFileName() == filename && entry.getSize() == EntryOfFilename.getSize()) {
+								char* emptyEntry = entry.toBytes();
+								for (int a = 0; a < entry.getSize(); a++) {
+									emptyEntry[a] = 0;
+								}
+
+								// ghi toàn bộ giá trị 0 cho các byte của Entry cũ
+								char* cluster = readCluster(RDET_cluster[i]);
+								writeOffset(cluster, j, emptyEntry, entry.getSize());
+								writeCluster(RDET_cluster[i], cluster);
+
+								delete[] cluster, clusterData, emptyEntry;
+								break;
+							}
+							j += val;
+						}
+					}
+					delete[] clusterData;
+				}
+
+				// cập nhật Entry vào RDET
+				char* cluster = readCluster(clusterEntry);
+				writeOffset(cluster, offsetEntry, newEntry.toBytes(), newSizeOfEntry);
+				writeCluster(clusterEntry, cluster);
+				delete[] cluster;
+
+				// cập nhật bảng FAT
+				writeFat(FAT_table);
+			}
 		}
 	}
 
@@ -271,10 +612,27 @@ void Volume::import(string path) {
 	}
 
 	// tên file
-	string filename = path.substr(path.find_last_of('/') + 1); // xác định tên file từ đường dẫn cung cấp
+	string filename;
+	// Duong dan su dung la /
+	if (path.find_last_of('\\') < path.length() && path.find_last_of('\\') >= 0) {
+		filename = path.substr(path.find_last_of('\\') + 1);
+	}
+	else {
+		filename = path.substr(path.find_last_of('/') + 1); // xác định tên file từ đường dẫn cung cấp
+	}
+
+	// check file name đã tồn tại trong volume hay chưa
+	vector<Entry> listEntry = this->readRDET();
+
+	for (int i = 0; i < listEntry.size(); i++) {
+		if (filename == listEntry[i].getFileName()) {
+			cout << "Ten file da ton tai roi!" << endl;
+			return;
+		}
+	}
+
 	// kích thước tên file
 	uint8_t sizeOfFilename = filename.length(); // tính theo bytes
-	
 
 	// mật khẩu
 	string password = "";

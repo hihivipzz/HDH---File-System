@@ -8,10 +8,11 @@ using namespace std;
 int main() {
 
 
-	Menu1();
+	/*Menu1();*/
 
-	//Volume v;
-	//v.open("hieu123");
+	Volume v;
+	v.open("hieu123");
+	v.updatePassword("abc.txt");
 	//unsigned int *a = v.readFat();
 	//for (int i = 0; i < 700; i++) {
 	//	cout << a[i];
