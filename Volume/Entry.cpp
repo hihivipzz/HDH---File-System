@@ -62,6 +62,10 @@ int Entry::getDataSize() {
 	return dataSize;
 }
 
+uint16_t Entry::getStartCluster() {
+	return startCluster;
+}
+
 void Entry::read(FILE* f) {
 }
 

@@ -4,6 +4,7 @@
 #include <fstream>
 
 #include"Entry.h"
+const int BUFFER_SIZE = 512*4;
 using namespace std;
 class Volume
 {
@@ -38,9 +39,9 @@ public:
 	bool resetPassWord(string newPW);
 
 	void import(string path);
-	bool outport(FILE* f, string filename, vector<Entry*>& listEntry, string outportPath);
+	bool outport(string filename, vector<Entry*>& listEntry, string outportPath);
 
-	//void deleteFile(string file);
+	bool deleteFile(string filename, vector<Entry*>& listEntry);
 
 };
 

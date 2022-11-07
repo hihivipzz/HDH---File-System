@@ -1,12 +1,21 @@
 ﻿  BigInt.cpp
-D:\HỌC TẬP\HK1 - NĂM 3\Hệ điều hành\Do an\HDH---File-System\Volume\BigInt.cpp(842,5): warning C4267: 'initializing': conversion from 'size_t' to 'long', possible loss of data
-D:\HỌC TẬP\HK1 - NĂM 3\Hệ điều hành\Do an\HDH---File-System\Volume\BigInt.cpp(901,5): warning C4267: '=': conversion from 'size_t' to 'long', possible loss of data
+D:\Source\HDH_2022\FS1\HDH---File-System\Volume\BigInt.cpp(842,5): warning C4267: 'initializing': conversion from 'size_t' to 'long', possible loss of data
+D:\Source\HDH_2022\FS1\HDH---File-System\Volume\BigInt.cpp(901,5): warning C4267: '=': conversion from 'size_t' to 'long', possible loss of data
   Caesar.cpp
   Entry.cpp
+D:\Source\HDH_2022\FS1\HDH---File-System\Volume\Entry.cpp(6,32): warning C4267: '=': conversion from 'size_t' to 'char', possible loss of data
+D:\Source\HDH_2022\FS1\HDH---File-System\Volume\Entry.cpp(11,37): warning C4267: '=': conversion from 'size_t' to 'char', possible loss of data
   main.cpp
   RSA.cpp
-D:\HỌC TẬP\HK1 - NĂM 3\Hệ điều hành\Do an\HDH---File-System\Volume\RSA.cpp(40,29): warning C4018: '<': signed/unsigned mismatch
+D:\Source\HDH_2022\FS1\HDH---File-System\Volume\RSA.cpp(40,29): warning C4018: '<': signed/unsigned mismatch
   utils.cpp
   volume.cpp
+D:\Source\HDH_2022\FS1\HDH---File-System\Volume\volume.cpp(34,37): warning C4267: '=': conversion from 'size_t' to 'uint8_t', possible loss of data
+D:\Source\HDH_2022\FS1\HDH---File-System\Volume\volume.cpp(172,37): warning C4267: '=': conversion from 'size_t' to 'uint8_t', possible loss of data
+D:\Source\HDH_2022\FS1\HDH---File-System\Volume\volume.cpp(208,12): warning C4244: 'initializing': conversion from 'std::streamoff' to 'int', possible loss of data
+D:\Source\HDH_2022\FS1\HDH---File-System\Volume\volume.cpp(210,10): warning C4244: 'initializing': conversion from 'std::streamoff' to 'int', possible loss of data
+D:\Source\HDH_2022\FS1\HDH---File-System\Volume\volume.cpp(218,24): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+D:\Source\HDH_2022\FS1\HDH---File-System\Volume\volume.cpp(285,53): warning C4553: '==': result of expression not used; did you intend '='?
+D:\Source\HDH_2022\FS1\HDH---File-System\Volume\volume.cpp(373,20): warning C4018: '<': signed/unsigned mismatch
   Generating Code...
-  Volume.vcxproj -> D:\HỌC TẬP\HK1 - NĂM 3\Hệ điều hành\Do an\HDH---File-System\x64\Debug\Volume.exe
+  Volume.vcxproj -> D:\Source\HDH_2022\FS1\HDH---File-System\x64\Debug\Volume.exe
