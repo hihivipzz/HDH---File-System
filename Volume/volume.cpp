@@ -3,7 +3,7 @@
 #include "RSA.h"
 #include "Entry.h"
 
-int fileEnd = UINT32_MAX;
+unsigned int fileEnd = UINT32_MAX;
 
 void Volume::init(int size, string password) {
 	data.open("MyFS.dat", ios::out | ios::binary);
@@ -121,7 +121,7 @@ void Volume::writeBlock(int num, char* data) {
 };
 
 unsigned int* Volume::readFat() {
-	unsigned int* result = new unsigned int (numberOfCluters + 3);
+	unsigned int* result = new unsigned int [numberOfCluters + 3];
 	int index = 0;
 
 	for (int n = 0; n < sectorPerFat; n++) {
@@ -179,6 +179,85 @@ bool Volume::resetPassWord(string newPW) {
 	delete[] buffer;
 
 	return true;
+}
+
+void Volume::updatePassword(string filename) {
+	string oldPassword, newPassword;
+	bool isExist = false;
+	//vector<Entry> listEntry = this->readRDET();
+	vector<Entry> listEntry;
+	Entry EntryOfFilename;
+
+	// check file name tồn tại hay không nếu tồn tại thì lấy entry đó ra
+	for (int i = 0; i < listEntry.size(); i++) {
+		if (filename == listEntry[i].getFileName()) {
+			isExist = true;
+			EntryOfFilename = listEntry[i];
+			break;
+		}
+	}
+
+	if (!isExist) {
+		cout << filename << " khong ton tai!" << endl;
+		return;
+	}
+
+	unsigned int* FAT_table = this->readFat();
+
+	// TH khong co password
+	if (EntryOfFilename.getPassword() == "") {
+		// nhap mat khau
+		cout << "Vui long nhap mat khau de thiet lap: ";
+		getline(cin, newPassword);
+
+		// tính lại kích thước Entry do kích thước password đã thay đổi
+		uint8_t newSizeOfEntry = EntryOfFilename.getSize() - EntryOfFilename.getPassSize() + newPassword.length();
+
+		// Tìm vị trí lưu Entry mới 
+
+		// cập nhật Entry vào RDET
+
+		// ghi giá 0 lên các byte của Entry cũ
+	}
+	else { // TH co mat khau
+		cout << "Vui long nhap mat khau cu: ";
+		getline(cin, oldPassword);
+
+		// TH mat khau khong khop
+		if (!EntryOfFilename.checkPassword(oldPassword)) {
+			cout << "Mat khau khong khop!" << endl;
+			return;
+		}
+
+		cout << "Mat khau khop ..." << endl;
+		cout << "Vui long nhap mat khau moi: ";
+		getline(cin, newPassword);
+
+		//TH password mới có cùng kích thước
+		if (newPassword.length() == EntryOfFilename.getPassword().length()) {
+
+			// Tao Entry với những thông tin mới
+			Entry newEntry;
+			newEntry.createEntry(filename, newPassword, EntryOfFilename.getDataSize(), EntryOfFilename.getType(), EntryOfFilename.getStartCluster());
+
+			// cập nhật Entry vào RDET
+
+			// ghi giá 0 lên các byte của Entry cũ
+
+		}
+		else { // TH mật khẩu mới khác kích thước
+			// tính lại kích thước Entry do kích thước password đã thay đổi
+			uint8_t newSizeOfEntry = EntryOfFilename.getSize() - EntryOfFilename.getPassSize() + newPassword.length();
+
+			// Tìm vị trí lưu Entry mới 
+
+			// cập nhật Entry vào RDET
+
+			// ghi giá 0 lên các byte của Entry cũ
+		}
+	}
+
+	delete[] FAT_table;
 }
 
 void Volume::import(string path) {

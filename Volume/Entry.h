@@ -28,5 +28,10 @@ public:
 	void read(FILE* f);
 	void Display(vector<Entry> listEntry);// In ten cac file
 	bool checkPassword(string password);
+	string getPassword();
+	void setPassword(string pwd);
+	char getType();
+	uint8_t getSize();
+	char getPassSize();
 };
 

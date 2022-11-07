@@ -1,5 +1,5 @@
 ﻿#include "Entry.h"
-#include"utils.h"
+#include "utils.h"
 
 void Entry::createEntry(string name, string password, int dataSize, int type, uint16_t startCluster) {
 	this->name = name; // tên file 
@@ -79,5 +79,31 @@ void Entry::Display(vector<Entry> listEntry) {
 }
 
 bool Entry::checkPassword(string password) {
+	string pwd_giaima = RSA_pwd::decryptPassword(this->password);
+
+	if (pwd_giaima != password) {
+		return false;
+	}
+
 	return true;
+}
+
+string Entry::getPassword() {
+	return password;
+}
+
+void Entry::setPassword(string pwd) {
+	password = RSA_pwd::encryptPassword(pwd);
+}
+
+char Entry::getType() {
+	return type;
+}
+
+uint8_t Entry::getSize() {
+	return size;
+}
+
+char Entry::getPassSize() {
+	return passSize;
 }
