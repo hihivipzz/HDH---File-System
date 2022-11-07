@@ -100,7 +100,6 @@ bool Volume::open(string passwordInput) {
 		cout << "Mat khau khong dung" << endl;
 		return false;
 	}
-
 	delete buffer;
 	return true;
 };
@@ -116,7 +115,7 @@ char* Volume::readBlock(int num) {
 };
 
 void Volume::writeBlock(int num, char* data) {
-	this->data.seekg(num * 512);
+	this->data.seekp(num * 512);
 	this->data.write(data, 512);
 };
 
@@ -126,14 +125,14 @@ unsigned int* Volume::readFat() {
 
 	for (int n = 0; n < sectorPerFat; n++) {
 		char*buffer = readBlock(fatStartSector + n);
-		for (int i = 0; i < 512 / 4; i+=4) {
-			result[index] = *(unsigned int*)&buffer[i];
+		for (int i = 0; i < 512; i+=4) {
+			result[index] = *(unsigned int*)( &buffer[i]);
 			index++;
-			if (index = numberOfCluters + 3 - 1) {
+			if (index == numberOfCluters + 3 ) {
 				break;
 			}
 		}
-		delete [] buffer;
+		delete[] buffer;
 	}
 	
 	return result;
@@ -141,7 +140,7 @@ unsigned int* Volume::readFat() {
 
 void Volume:: writeFat(unsigned int* a) {
 	for (int i = 0; i < sectorPerFat; i++) {
-		char* temp = (char*)&a[i*512/4];
+		char* temp = (char*)&a[i*(512/4)];
 		writeBlock(fatStartSector + i, temp);
 	}
 }
@@ -275,7 +274,7 @@ void Volume::import(string path) {
 	// tên file
 	string filename = path.substr(path.find_last_of('/') + 1); // xác định tên file từ đường dẫn cung cấp
 	// kích thước tên file
-	uint8_t sizeOfFilename = sizeof(filename.c_str()) - 1; // tính theo bytes
+	uint8_t sizeOfFilename = filename.length(); // tính theo bytes
 	
 
 	// mật khẩu
@@ -294,12 +293,12 @@ void Volume::import(string path) {
 		return;
 	}
 	//Tính số cluster file chiếm
-	int clusterOfFileData = ceil(sizeOfFile / 512 * sectorPerCluster);
+	int clusterOfFileData = ceil((double)sizeOfFile / (512 * sectorPerCluster));
 	//Loại FIle
 	int type = 0;
 
 	// tính kích thước entry của tệp tin này
-	uint16_t sizeOfEntry = 2 + 1 + 1 + 2 + 2 + 1 + 2 + 4 + sizeOfFilename + sizeOfPassword; // N
+	uint16_t sizeOfEntry = 1 + 1 + 1 + 2 + 2 + 1 + 2 + 4 + sizeOfFilename + sizeOfPassword; // N
 	// số cluster mà Entry chiếm
 	uint16_t amountOfCluster = sizeOfEntry / bytePerSector + 1;  // M
 
@@ -313,6 +312,7 @@ void Volume::import(string path) {
 	int offsetEntry; // offset của Entry trên cluster đó
 	vector<int> RDET_cluster;
 	RDET_cluster.push_back(rdetCluster);
+	
 	while (1) {
 		if (FAT_table[RDET_cluster[RDET_cluster.size() - 1]] == fileEnd) {
 			break;
@@ -326,8 +326,8 @@ void Volume::import(string path) {
 	bool flag = false;
 
 	int i = 0, j = 0;
-	while (i < RDET_cluster.size() && !flag) {
-		temp = readCluster(i);
+	while (i < RDET_cluster.size() ) {
+		temp = readCluster(RDET_cluster[i]);
 		while (j < sectorPerCluster * 512) {
 			char val = *(char*)(&temp[j]);
 			if (val == 0) {
@@ -342,29 +342,36 @@ void Volume::import(string path) {
 				j = j + val;
 			}
 		}
-		i++;
+		delete[] temp;
+
+		if (!flag) {
+			i++;
+		}
+		else {
+			break;
+		}
 	}
 
 	// không đủ N byte liên tiếp
 	if (!flag) {
 		//Tìm cluster trống
-		int indexClusterEmpy = -1;
-		for (int i = 3; i < sizeof(FAT_table); i++) {
+		int indexClusterEmpty = -1;
+		for (int i = 3; i < numberOfCluters+3; i++) {
 			if (FAT_table[i] == 0) {
-				indexClusterEmpy = i;
+				indexClusterEmpty = i;
 				break;
 			}
 		}
 
 		// mở rộng bảng RDET
-		if (indexClusterEmpy == -1) {
+		if (indexClusterEmpty == -1) {
 			cout << "Khong du kich thuoc de luu file" << endl;
 		}
 		else {
-			FAT_table[RDET_cluster[RDET_cluster.size() - 1]] == indexClusterEmpy;
-			FAT_table[indexClusterEmpy] = fileEnd;
+			FAT_table[RDET_cluster[RDET_cluster.size() - 1]] = indexClusterEmpty;
+			FAT_table[indexClusterEmpty] = fileEnd;
 
-			clusterEntry = indexClusterEmpy;
+			clusterEntry = indexClusterEmpty;
 			offsetEntry = 0;
 		}
 	}
@@ -376,7 +383,7 @@ void Volume::import(string path) {
 
 	//Tìm cluster trống để lưu dữ liệu
 	vector<unsigned int> Data_cluster;
-	for (int i = 3; i < sizeof(FAT_table); i++) {
+	for (int i = 3; i < numberOfCluters; i++) {
 		if (FAT_table[i] == 0) {
 			Data_cluster.push_back(i);
 			if (Data_cluster.size() == clusterOfFileData) {
@@ -393,9 +400,9 @@ void Volume::import(string path) {
 
 	//Điều chỉnh lại bảng FAT
 	for (int i = 0; i < Data_cluster.size() - 1; i++) {
-		FAT_table[i] = FAT_table[i + 1];
+		FAT_table[Data_cluster[i]] = Data_cluster[i + 1];
 	}
-	FAT_table[Data_cluster.size() - 1] = fileEnd;
+	FAT_table[Data_cluster[Data_cluster.size() - 1]] = fileEnd;
 
 	//Ghi entry vào RDET
 	Entry e;
@@ -403,22 +410,23 @@ void Volume::import(string path) {
 	char* cluster = readCluster(clusterEntry);
 	writeOffset(cluster, offsetEntry, e.toBytes(), sizeOfEntry);
 	writeCluster(clusterEntry, cluster);
-	delete[] cluster;
+	delete [] cluster;
 
 	//Ghi lại bảng FAT vào vol
 	writeFat(FAT_table);
 	
 	//Ghi dữ liệu file vào cluster
+	readFile.seekg(0);
 	for (int i = 0; i < Data_cluster.size(); i++) {
 		//Lấy dữ liệu file tương đương số byte 1 cluster
-		readFile.seekg(i * 512 * sectorPerCluster);
+		readFile.seekg(i * 512 * sectorPerCluster, ios_base::beg);
 		char* data = new char[512*sectorPerCluster];
 		readFile.read(data, 512 * sectorPerCluster);
 		
 		//Ghi vào cluster của vol
 		writeCluster(Data_cluster[i], data);
 
-		delete[]data;
+		delete [] data;
 	}
 
 	readFile.close();

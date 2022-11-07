@@ -38,7 +38,7 @@ void Entry::createEntry(string name, string password, int dataSize, int type, ui
 }
 
 char* Entry::toBytes() {
-	char* data = new char(size);
+	char* data = new char[size];
 
 	writeOffset(data, 0, (char*)&size, sizeof(size));
 	writeOffset(data, 1, (char*)&nameSize, sizeof(nameSize));
