@@ -18,15 +18,6 @@ int main() {
 	//}
 
 
-	Volume v;
-	v.open("hieu123");
-	string path;
-	cin >> path;
-	v.import(path);
-	
-
-
-
 	//cout << b[0];
 	/*string pwd_mahoa = RSA_pwd::encryptPassword("xyzeqrt+-092");
 	cout << pwd_mahoa << endl;

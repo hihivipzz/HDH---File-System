@@ -17,6 +17,7 @@ void Menu1() {
 		cout << "0. Thoat" << endl;
 		cout << "Chon chuc nang muon thuc hien: ";
 		cin >> choice;
+		cout << "-------------------------------" << endl << endl;
 
 		switch (choice)
 		{
@@ -27,10 +28,11 @@ void Menu1() {
 			MenuPasswordVolume();
 			break;
 		case 3:
-			/*vector<Entry> listEntry = Volume::readRDET();
-			Entry::Display(listEntry);
-			system("pause");
-			break;*/
+			viewListMenu();
+			break;
+		case 5:
+			importFileToVolume();
+			break;
 		case 0:
 			return;
 		default:
@@ -42,11 +44,8 @@ void Menu1() {
 
 void createVolume() {
 	fstream f("MyFS.dat");
-	if (f.is_open()) {
-		cout << "True";
-	}
-	else {
-		cout << "false";
+	if (!f.is_open()) {
+		cout << "Volume da duoc tao ban co muon format lai Volume" << endl;
 	}
 
 	int size;
@@ -63,7 +62,7 @@ void createVolume() {
 
 void MenuPasswordVolume() {
 	string passWord;
-	cout << "Nhap mat khau cho Volume: ";
+	cout << "Nhap mat khau de truy suat Volume: ";
 	cin >> passWord;
 	Volume v;
 	if (!v.open(passWord)) {
@@ -112,17 +111,41 @@ void MenuPasswordVolume() {
 	}
 }
 
+void viewListMenu() {
+	string passWord;
+	cout << "Nhap mat khau de truy suat Volume: ";
+	cin >> passWord;
+	Volume v;
+	if (!v.open(passWord)) {
+		return;
+	}
+
+	vector<Entry> listEntry = v.readRDET();
+	cout << "Danh sach file: " << endl;
+	for (int i = 0; i < listEntry.size(); i++) {
+		Entry e = listEntry[i];
+		string name = e.getFileName();
+		cout << name<<endl;
+	}
+	cout << "\n";
+	system("pause");
+
+}
+
 void importFileToVolume() {
 	string passWord;
-	cout << "Nhap mat khau cho Volume: ";
+	cout << "Nhap mat khau de truy suat Volume: ";
 	cin >> passWord;
 	Volume v;
 	if (!v.open(passWord)) {
 		cout << "Volume chua duoc tao hoac mat khau khong dung" << endl;
 		return;
 	}
-	
-	
+
+	string path;
+	cout << "Nhap duong dan file: ";
+	cin >> path;
+	v.import(path);
 }
 
 void writeOffset(char* buffer, int offSet, char* data, int n) {

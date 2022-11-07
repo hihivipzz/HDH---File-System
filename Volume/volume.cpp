@@ -6,9 +6,8 @@
 unsigned int fileEnd = UINT32_MAX;
 
 void Volume::init(int size, string password) {
-	data.open("MyFS.dat", ios::out | ios::binary);
-
 	//Tạo MyFS.dat kích thước size
+	data.open("MyFS.dat", ios::out | ios::binary);
 	data.seekp(size);
 	char temp = 0;
 	data.write(&temp, 1);
@@ -306,10 +305,10 @@ void Volume::import(string path) {
 	unsigned int* FAT_table = this->readFat();
 
 	// Bước 4:
-
-	// truy xuất RDET
 	int clusterEntry; // cluster của Entry
 	int offsetEntry; // offset của Entry trên cluster đó
+
+	// truy xuất RDET
 	vector<int> RDET_cluster;
 	RDET_cluster.push_back(rdetCluster);
 	
@@ -461,7 +460,7 @@ bool Volume::outport(string filename, vector<Entry*>& listEntry, string outportP
 
 	vector<int> cluster_list; // luu vi tri cac cluster data
 	cluster_list.push_back(FAT_table[exportEntry->getStartCluster()]);
-	while (cluster_list.back() != 4294967295) { // khac FFFFFFFF
+	while (cluster_list.back() != fileEnd) { // khac ket thuc file
 		cluster_list.push_back(FAT_table[cluster_list.back()]);
 	}
 	cluster_list.push_back(FAT_table[cluster_list.back()]);
@@ -520,4 +519,43 @@ bool Volume::deleteFile(string filename, vector<Entry*>& listEntry) {
 
 	// Cap nhat lai Volume
 
+}
+
+vector<Entry> Volume::readRDET() {
+	vector<Entry> rdet;
+
+	//đọc bảng FAT
+	unsigned int* FAT_table = readFat();
+	//Lấy ds cluster cũa RDET
+	vector<int> RDET_cluster;
+	RDET_cluster.push_back(rdetCluster);
+	while (1) {
+		if (FAT_table[RDET_cluster[RDET_cluster.size() - 1]] == fileEnd) {
+			break;
+		}
+
+		RDET_cluster.push_back(FAT_table[RDET_cluster[RDET_cluster.size() - 1]]);
+	}
+
+	for (int i = 0; i < RDET_cluster.size(); i++) {
+		char* clusterData = readCluster(RDET_cluster[i]);
+		int j = 0;
+		while (j < 512 * sectorPerCluster) {
+			char val = *(char*)(&clusterData[j]);
+			if (val == 0) {
+				j++;
+			}
+			else {
+				Entry entry;
+				entry.readEntry(&clusterData[j]);
+				rdet.push_back(entry);
+				j += val;
+			}
+		}
+		delete[] clusterData;
+	}
+
+	delete[] FAT_table;
+
+	return rdet;
 }

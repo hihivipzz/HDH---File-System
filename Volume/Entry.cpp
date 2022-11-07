@@ -66,18 +66,6 @@ uint16_t Entry::getStartCluster() {
 	return startCluster;
 }
 
-void Entry::read(FILE* f) {
-}
-
-void Entry::Display(vector<Entry> listEntry) {
-	for (int i = 0; i < listEntry.size(); i++) {
-		Entry e = listEntry[i];
-		string name = e.getFileName();
-		cout << name;
-	}
-	cout << "\n";
-}
-
 bool Entry::checkPassword(string password) {
 	string pwd_giaima = RSA_pwd::decryptPassword(this->password);
 
@@ -106,4 +94,22 @@ uint8_t Entry::getSize() {
 
 char Entry::getPassSize() {
 	return passSize;
+}
+
+void Entry::readEntry(char* data) {
+	size = *(uint8_t*)&data[0];
+	nameSize = *(char*)&data[1];
+	passSize = *(char*)&data[2];
+	timeCreate = *(uint16_t*)&data[3];
+	dateCreate = *(uint16_t*)&data[5];
+	type = *(char*)&data[7];
+	startCluster = *(uint16_t*)&data[8];
+	dataSize = *(int*)&data[10];
+
+	for (int i = 0; i < nameSize; i++) {
+		name += data[14 + i];
+	}
+	for (int i = 0; i < passSize; i++) {
+		password += data[14 + nameSize + i];
+	}
 }
