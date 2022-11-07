@@ -224,6 +224,7 @@ void Volume::updatePassword(string filename) {
 	// TH khong co password
 	if (EntryOfFilename.getPassword() == "") {
 		// nhap mat khau
+		cin.ignore();
 		cout << "Vui long nhap mat khau de thiet lap: ";
 		getline(cin, newPassword);
 
@@ -389,6 +390,7 @@ void Volume::updatePassword(string filename) {
 		}
 	}
 	else { // TH co mat khau
+		cin.ignore();
 		cout << "Vui long nhap mat khau cu: ";
 		getline(cin, oldPassword);
 

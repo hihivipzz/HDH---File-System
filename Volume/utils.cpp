@@ -33,6 +33,7 @@ void Menu1() {
 			break;
 		case 4:
 			changeFilePassword();
+			break;
 		case 5:
 			importFileToVolume();
 			break;
