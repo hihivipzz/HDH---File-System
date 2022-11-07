@@ -43,6 +43,7 @@ public:
 	bool outport(string filename, vector<Entry*>& listEntry, string outportPath);
 
 	bool deleteFile(string filename, vector<Entry*>& listEntry);
+	void close();
 
 };
 

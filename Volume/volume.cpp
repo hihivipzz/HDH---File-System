@@ -15,6 +15,7 @@ void Volume::init(int size, string password) {
 	//Tính số Sector
 	int sectors = size / 512;
 
+	//Xác định các thông số
 	signature[0]='H';
 	signature[1] = 'T';
 	signature[2] = 'T';
@@ -69,6 +70,8 @@ void Volume::init(int size, string password) {
 		writeBlock(i, buffer);
 	}
 
+	//Ghi đè FAt 2
+	writeBlock(1 + sectorPerFat, buffer);
 	data.close();
 }
 
@@ -138,9 +141,15 @@ unsigned int* Volume::readFat() {
 };
 
 void Volume:: writeFat(unsigned int* a) {
+	//ghi bảng FAT 1
 	for (int i = 0; i < sectorPerFat; i++) {
 		char* temp = (char*)&a[i*(512/4)];
 		writeBlock(fatStartSector + i, temp);
+	}
+	//ghi bảng FAT2
+	for (int i = 0; i < sectorPerFat; i++) {
+		char* temp = (char*)&a[i * (512 / 4)];
+		writeBlock(fatStartSector+sectorPerFat + i, temp);
 	}
 }
 
@@ -630,9 +639,9 @@ void Volume::import(string path) {
 			return;
 		}
 	}
-
 	// kích thước tên file
 	uint8_t sizeOfFilename = filename.length(); // tính theo bytes
+	
 
 	// mật khẩu
 	string password = "";
@@ -916,4 +925,8 @@ vector<Entry> Volume::readRDET() {
 	delete[] FAT_table;
 
 	return rdet;
+}
+
+void Volume::close() {
+	data.close();
 }

@@ -7,6 +7,7 @@ using namespace std;
 void Menu1() {
 	int choice;
 	while (1) {
+		cout << "-------------------------------" << endl << endl;
 		cout << "1. Tao Volume MyFS.dat" << endl;
 		cout << "2. Thiet lap/ Doi/ Kiem tra mat khau truy suat MyFS" << endl;
 		cout << "3. Liet ke danh sach tap tin trong MyFS" << endl;
@@ -30,6 +31,8 @@ void Menu1() {
 		case 3:
 			viewListMenu();
 			break;
+		case 4:
+			changeFilePassword();
 		case 5:
 			importFileToVolume();
 			break;
@@ -58,6 +61,7 @@ void createVolume() {
 	Volume v;
 	v.init(size, password);
 
+	v.close();
 }
 
 void MenuPasswordVolume() {
@@ -74,6 +78,7 @@ void MenuPasswordVolume() {
 	while (1) {
 		cout << "1. Doi Mat Khau" << endl;
 		cout << "2. Kiem tra mat khau" << endl;
+		cout << "0.Tro lai" << endl;
 		cout << "Chon chuc nang muon thuc hien: ";
 		cin >> choice;
 
@@ -130,6 +135,7 @@ void viewListMenu() {
 	cout << "\n";
 	system("pause");
 
+	v.close();
 }
 
 void importFileToVolume() {
@@ -146,6 +152,26 @@ void importFileToVolume() {
 	cout << "Nhap duong dan file: ";
 	cin >> path;
 	v.import(path);
+
+	v.close();
+}
+
+void changeFilePassword() {
+	string passWord;
+	cout << "Nhap mat khau de truy suat Volume: ";
+	cin >> passWord;
+	Volume v;
+	if (!v.open(passWord)) {
+		cout << "Volume chua duoc tao hoac mat khau khong dung" << endl;
+		return;
+	}
+
+	string filename;
+	cout << "Nhap ten file muon cap nhat/thay doi mat khau: ";
+	cin >> filename;
+	v.updatePassword(filename);
+
+	v.close();
 }
 
 void writeOffset(char* buffer, int offSet, char* data, int n) {
