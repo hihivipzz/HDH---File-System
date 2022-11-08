@@ -8,12 +8,9 @@ using namespace std;
 int main() {
 
 
-	//Menu1();
+	Menu1();
 
-	Volume v;
-	v.open("hieu123");
-	v.import("E:/ne.txt");
-	v.deleteFile("ne.txt");
+
 	//v.updatePassword("abc.txt");
 	//unsigned int *a = v.readFat();
 	//for (int i = 0; i < 700; i++) {

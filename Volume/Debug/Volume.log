@@ -1,33 +1,40 @@
-﻿  volume.cpp
+﻿  RSA.cpp
+D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\RSA.cpp(42,24): warning C4244: 'argument': conversion from '__int64' to 'const unsigned int', possible loss of data
+D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\RSA.cpp(47,23): warning C4018: '<': signed/unsigned mismatch
+D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\RSA.cpp(60,23): warning C4018: '<': signed/unsigned mismatch
+  utils.cpp
+D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\utils.cpp(134,20): warning C4018: '<': signed/unsigned mismatch
+  volume.cpp
 D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(34,37): warning C4267: '=': conversion from 'size_t' to 'uint8_t', possible loss of data
 D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(179,37): warning C4267: '=': conversion from 'size_t' to 'uint8_t', possible loss of data
 D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(198,20): warning C4018: '<': signed/unsigned mismatch
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(231,108): warning C4267: 'initializing': conversion from 'size_t' to 'uint8_t', possible loss of data
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(240,21): warning C4018: '<': signed/unsigned mismatch
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(293,13): warning C4018: '<': signed/unsigned mismatch
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(324,23): warning C4018: '<': signed/unsigned mismatch
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(350,22): warning C4018: '<': signed/unsigned mismatch
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(412,22): warning C4018: '<': signed/unsigned mismatch
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(439,109): warning C4267: 'initializing': conversion from 'size_t' to 'uint8_t', possible loss of data
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(445,22): warning C4018: '<': signed/unsigned mismatch
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(509,14): warning C4018: '<': signed/unsigned mismatch
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(539,24): warning C4018: '<': signed/unsigned mismatch
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(565,23): warning C4018: '<': signed/unsigned mismatch
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(636,20): warning C4018: '<': signed/unsigned mismatch
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(643,44): warning C4267: 'initializing': conversion from 'size_t' to 'uint8_t', possible loss of data
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(652,12): warning C4244: 'initializing': conversion from 'std::streamoff' to 'int', possible loss of data
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(654,10): warning C4244: 'initializing': conversion from 'std::streamoff' to 'int', possible loss of data
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(662,24): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(695,11): warning C4018: '<': signed/unsigned mismatch
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(725,21): warning C4018: '<': signed/unsigned mismatch
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(752,20): warning C4018: '<': signed/unsigned mismatch
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(762,26): warning C4018: '<': signed/unsigned mismatch
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(768,20): warning C4018: '<': signed/unsigned mismatch
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(786,20): warning C4018: '<': signed/unsigned mismatch
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(806,20): warning C4018: '<': signed/unsigned mismatch
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(836,20): warning C4018: '<': signed/unsigned mismatch
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(855,20): warning C4018: '<': signed/unsigned mismatch
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(881,20): warning C4018: '<': signed/unsigned mismatch
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(907,20): warning C4018: '<': signed/unsigned mismatch
-D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(889): warning C4715: 'Volume::deleteFile': not all control paths return a value
+D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(232,108): warning C4267: 'initializing': conversion from 'size_t' to 'uint8_t', possible loss of data
+D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(241,21): warning C4018: '<': signed/unsigned mismatch
+D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(294,13): warning C4018: '<': signed/unsigned mismatch
+D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(325,23): warning C4018: '<': signed/unsigned mismatch
+D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(351,22): warning C4018: '<': signed/unsigned mismatch
+D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(414,22): warning C4018: '<': signed/unsigned mismatch
+D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(441,109): warning C4267: 'initializing': conversion from 'size_t' to 'uint8_t', possible loss of data
+D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(447,22): warning C4018: '<': signed/unsigned mismatch
+D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(511,14): warning C4018: '<': signed/unsigned mismatch
+D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(541,24): warning C4018: '<': signed/unsigned mismatch
+D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(567,23): warning C4018: '<': signed/unsigned mismatch
+D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(638,20): warning C4018: '<': signed/unsigned mismatch
+D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(645,44): warning C4267: 'initializing': conversion from 'size_t' to 'uint8_t', possible loss of data
+D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(654,12): warning C4244: 'initializing': conversion from 'std::streamoff' to 'int', possible loss of data
+D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(656,10): warning C4244: 'initializing': conversion from 'std::streamoff' to 'int', possible loss of data
+D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(664,24): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(697,11): warning C4018: '<': signed/unsigned mismatch
+D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(727,21): warning C4018: '<': signed/unsigned mismatch
+D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(754,20): warning C4018: '<': signed/unsigned mismatch
+D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(764,26): warning C4018: '<': signed/unsigned mismatch
+D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(770,20): warning C4018: '<': signed/unsigned mismatch
+D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(788,20): warning C4018: '<': signed/unsigned mismatch
+D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(808,20): warning C4018: '<': signed/unsigned mismatch
+D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(838,20): warning C4018: '<': signed/unsigned mismatch
+D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(859,20): warning C4018: '<': signed/unsigned mismatch
+D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(913,20): warning C4018: '<': signed/unsigned mismatch
+D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(947,20): warning C4018: '<': signed/unsigned mismatch
+D:\Study\Tailieu\HDH\Volume\HDH---File-System\Volume\volume.cpp(974,20): warning C4018: '<': signed/unsigned mismatch
+  Generating Code...
   Volume.vcxproj -> D:\Study\Tailieu\HDH\Volume\HDH---File-System\Debug\Volume.exe

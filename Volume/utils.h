@@ -9,6 +9,6 @@ void MenuPasswordVolume(); //chuc nang 2 kiem/doi mat khau
 void viewListMenu(); //Chuc nang 3 xem ds file
 void importFileToVolume(); //chuc nang 5 import file vao vol
 void changeFilePassword();
-
+void deleteFile();//Chuc nag 7 xoa file
 
 void writeOffset(char* buffer, int offSet, char* data, int n); // Ghi n bytes của data vào buffer tại offset  

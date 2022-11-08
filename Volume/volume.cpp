@@ -880,7 +880,22 @@ bool Volume::deleteFile(string filename) {
 		}
 	}
 
+	//Đọc thông itn bảng FAT
 	unsigned int* FAT_table = this->readFat();
+
+	//Lấy ds cluster chưa data file cần xóa
+	vector<int> data_cluster;
+	data_cluster.push_back(deleteEntry.getStartCluster());
+
+	while (1) {
+		if (FAT_table[data_cluster[data_cluster.size() - 1]] == fileEnd) {
+			break;
+		}
+
+		data_cluster.push_back(FAT_table[data_cluster[data_cluster.size() - 1]]);
+	}
+
+	//Lấy ds cluster RDET
 	vector<int> RDET_cluster;
 	RDET_cluster.push_back(rdetCluster);
 
@@ -892,6 +907,7 @@ bool Volume::deleteFile(string filename) {
 		RDET_cluster.push_back(FAT_table[RDET_cluster[RDET_cluster.size() - 1]]);
 	}
 
+	//Xóa Entry trên RDET
 	int clusterNeedCheck;
 
 	for (int i = 0; i < RDET_cluster.size(); i++) {
@@ -927,39 +943,10 @@ bool Volume::deleteFile(string filename) {
 		delete[] clusterData;
 	}
 
-	char* clusterData = readCluster(RDET_cluster[clusterNeedCheck]);
-	int j = 0;
-	bool isEmptyCluster = false;
-	while (j < 512 * sectorPerCluster) {
-		char val = *(char*)(&clusterData[j]);
-		if (val == 0) {
-			j++;
-		}
-		else {
-			isEmptyCluster = true;
-			break;
-		}
+	//Xóa thông tin cluster data file trên bảng FAT
+	for (int i = 0; i < data_cluster.size(); i++) {
+		FAT_table[data_cluster[i]] = 1;
 	}
-
-	delete[] clusterData;
-
-	// cluster empty
-	if (j == 2048) {
-		if (RDET_cluster.size() != 1) {
-			RDET_cluster.erase(RDET_cluster.begin() + clusterNeedCheck); // xoa cluster đó khỏi RDET
-
-			// cap nhat lai bang FAT
-			int k = clusterNeedCheck;
-			while (1) {
-				FAT_table[k] = FAT_table[k + 1];
-				if (FAT_table[k] == fileEnd) {
-					break;
-				}
-				k++;
-			}
-		}
-	}
-
 
 	// Cap nhat lai FAT
 	writeFat(FAT_table);

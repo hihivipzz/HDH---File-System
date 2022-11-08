@@ -61,6 +61,9 @@ string RSA_pwd::decryptPassword(string pwd) {
     {
         BigInt m = pwd[i];
         m = a.pow_modify(m, d) % n;
+        if (m < 0) {
+            m = -m;
+        }
         result += char(m.to_int());
     }
 

@@ -37,6 +37,9 @@ void Menu1() {
 		case 5:
 			importFileToVolume();
 			break;
+		case 7:
+			deleteFile();
+			break;
 		case 0:
 			return;
 		default:
@@ -131,10 +134,9 @@ void viewListMenu() {
 	for (int i = 0; i < listEntry.size(); i++) {
 		Entry e = listEntry[i];
 		string name = e.getFileName();
-		cout << name<<endl;
+		cout <<"     " << name << endl;
 	}
 	cout << "\n";
-	system("pause");
 
 	v.close();
 }
@@ -171,6 +173,24 @@ void changeFilePassword() {
 	cout << "Nhap ten file muon cap nhat/thay doi mat khau: ";
 	cin >> filename;
 	v.updatePassword(filename);
+
+	v.close();
+}
+
+void deleteFile() {
+	string passWord;
+	cout << "Nhap mat khau de truy suat Volume: ";
+	cin >> passWord;
+	Volume v;
+	if (!v.open(passWord)) {
+		cout << "Volume chua duoc tao hoac mat khau khong dung" << endl;
+		return;
+	}
+
+	string path;
+	cout << "Nhap file muon xoa: ";
+	cin >> path;
+	v.deleteFile(path);
 
 	v.close();
 }
