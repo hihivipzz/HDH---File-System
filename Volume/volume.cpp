@@ -941,6 +941,8 @@ bool Volume::deleteFile(string filename) {
 		}
 	}
 
+	delete[] clusterData;
+
 	// cluster empty
 	if (j == 2048) {
 		if (RDET_cluster.size() != 1) {
