@@ -843,51 +843,118 @@ bool Volume::outport(string filename, vector<Entry*>& listEntry, string outportP
 	}
 
 	fclose(target);
+	
 
 	// Neu la folder: chua xu ly
 
 	return true;
 }
 
-bool Volume::deleteFile(string filename, vector<Entry*>& listEntry) {
+bool Volume::deleteFile(string filename) {
 	bool found = false;
-	Entry* deleteEntry = nullptr;
-	int size = deleteEntry->getDataSize();
+	vector<Entry> listEntry = readRDET();
+	Entry deleteEntry; // Entry chứa tệp tin cần delete
+	//int size = deleteEntry->getDataSize();
 
 	for (int i = 0; i < listEntry.size(); i++) {
-		if (filename == listEntry[i]->getFileName()) {// ktra file co ton tai bang cach ktra ten trong list ten
+		if (filename == listEntry[i].getFileName()) {// ktra file co ton tai bang cach ktra ten trong list ten
 			found = true;
 			deleteEntry = listEntry[i];
 			break;
 		}
 	}
 
-	if (!found) return false;
-
-	string password;
-	cout << "Nhap mat khau file/folder can export: ";
-	getline(cin, password);
-	if (!deleteEntry->checkPassword(password))
+	if (!found) {
+		cout << "File khong ton tai" << endl;
 		return false;
+	};
+
+	if (deleteEntry.getPassword() != "") {
+		string password;
+		cout << "Nhap mat khau file/folder can xoa: ";
+		getline(cin, password);
+
+		if (!deleteEntry.checkPassword(password)) {
+			cout << "Mat khau khong khop" << endl;
+			return false;
+		}
+	}
 
 	unsigned int* FAT_table = this->readFat();
+	vector<int> RDET_cluster;
+	RDET_cluster.push_back(rdetCluster);
 
-	vector<int> cluster_list; // luu vi tri cac cluster data
-	cluster_list.push_back(FAT_table[deleteEntry->getStartCluster()]);
-	while (cluster_list.back() != 4294967295) { // khac FFFFFFFF
-		cluster_list.push_back(FAT_table[cluster_list.back()]);
-	}
-	cluster_list.push_back(FAT_table[cluster_list.back()]);
+	while (1) {
+		if (FAT_table[RDET_cluster[RDET_cluster.size() - 1]] == fileEnd) {
+			break;
+		}
 
-	// Cap nhat lai bang FAT
-	for (int i = 0; i < cluster_list.size(); ++i) {
-		FAT_table[cluster_list[i]] = 1;
+		RDET_cluster.push_back(FAT_table[RDET_cluster[RDET_cluster.size() - 1]]);
 	}
 
-	// Cap nhat lai RDET
+	int clusterNeedCheck;
 
-	// Cap nhat lai Volume
+	for (int i = 0; i < RDET_cluster.size(); i++) {
+		char* clusterData = readCluster(RDET_cluster[i]);
+		int j = 0;
+		while (j < 512 * sectorPerCluster) {
+			char val = *(char*)(&clusterData[j]);
+			if (val == 0) {
+				j++;
+			}
+			else {
+				Entry entry;
+				entry.readEntry(&clusterData[j]);
+				if (entry.getFileName() == filename) {
+					char* emptyEntry = entry.toBytes();
+					for (int a = 0; a < entry.getSize(); a++) {
+						emptyEntry[a] = 0;
+					}
 
+					// ghi toàn bộ giá trị 0 cho các byte của Entry cũ
+					char* cluster = readCluster(RDET_cluster[i]);
+					writeOffset(cluster, j, emptyEntry, entry.getSize());
+					writeCluster(RDET_cluster[i], cluster);
+
+					clusterNeedCheck = i;
+
+					delete[] cluster, clusterData, emptyEntry;
+					break;
+				}
+				j += val;
+			}
+		}
+		delete[] clusterData;
+	}
+
+	char* clusterData = readCluster(RDET_cluster[clusterNeedCheck]);
+	int j = 0;
+	bool isEmptyCluster = false;
+	while (j < 512 * sectorPerCluster) {
+		char val = *(char*)(&clusterData[j]);
+		if (val == 0) {
+			j++;
+		}
+		else {
+			isEmptyCluster = true;
+			break;
+		}
+	}
+
+	// cluster empty
+	if (j == 2048) {
+		RDET_cluster.erase(RDET_cluster.begin() + clusterNeedCheck); // xoa cluster đó khỏi RDET
+
+		// cap nhat lai bang FAT
+
+	}
+
+
+	// Cap nhat lai FAT
+	writeFat(FAT_table);
+
+	delete[] FAT_table;
+	return true;
 }
 
 vector<Entry> Volume::readRDET() {

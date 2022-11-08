@@ -42,7 +42,7 @@ public:
 	void import(string path);
 	bool outport(string filename, vector<Entry*>& listEntry, string outportPath);
 
-	bool deleteFile(string filename, vector<Entry*>& listEntry);
+	bool deleteFile(string filename);
 	void close();
 
 };

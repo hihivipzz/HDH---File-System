@@ -11,8 +11,9 @@ int main() {
 	Menu1();
 
 	/*Volume v;
-	v.open("123");
-	v.updatePassword("abc.txt");*/
+	v.open("hieu123");
+	v.deleteFile("Test.txt");*/
+	//v.updatePassword("abc.txt");
 	//unsigned int *a = v.readFat();
 	//for (int i = 0; i < 700; i++) {
 	//	cout << a[i];
