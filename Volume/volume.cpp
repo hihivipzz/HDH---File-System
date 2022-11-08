@@ -943,10 +943,19 @@ bool Volume::deleteFile(string filename) {
 
 	// cluster empty
 	if (j == 2048) {
-		RDET_cluster.erase(RDET_cluster.begin() + clusterNeedCheck); // xoa cluster đó khỏi RDET
+		if (RDET_cluster.size() != 1) {
+			RDET_cluster.erase(RDET_cluster.begin() + clusterNeedCheck); // xoa cluster đó khỏi RDET
 
-		// cap nhat lai bang FAT
-
+			// cap nhat lai bang FAT
+			int k = clusterNeedCheck;
+			while (1) {
+				FAT_table[k] = FAT_table[k + 1];
+				if (FAT_table[k] == fileEnd) {
+					break;
+				}
+				k++;
+			}
+		}
 	}
 
 
