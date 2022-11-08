@@ -177,6 +177,40 @@ void changeFilePassword() {
 	v.close();
 }
 
+void exportFile() {
+	string passWord;
+	cout << "Nhap mat khau de truy suat Volume: ";
+	cin >> passWord;
+	Volume v;
+	if (!v.open(passWord)) {
+		cout << "Volume chua duoc tao hoac mat khau khong dung" << endl;
+		return;
+	}
+
+	vector<Entry> listEntry = v.readRDET(); // Hien danh sach file de chon
+	cout << "Danh sach file: " << endl;
+	for (int i = 0; i < listEntry.size(); i++) {
+		Entry e = listEntry[i];
+		if (e.getFileName() != "") {
+			string name = e.getFileName();
+			cout << name << endl;
+		}
+	}
+	cout << "\n------";
+
+	string filename;
+	cout << "Nhap file muon export: ";
+	cin >> filename;
+
+	string outpath;
+	cout << "Nhap duong dan muon export file den: ";
+	cin >> outpath;
+
+	if (v.outport(filename, outpath)) cout << "Export file thanh cong";
+	else cout << "Export file that bai";
+	v.close();
+}
+
 void deleteFile() {
 	string passWord;
 	cout << "Nhap mat khau de truy suat Volume: ";
