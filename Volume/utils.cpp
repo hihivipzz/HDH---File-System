@@ -1,47 +1,75 @@
-#include<iostream>
+﻿#include<iostream>
 #include<fstream>
 #include<string>
 #include"utils.h"
+#include <windows.h>
+#include <iomanip>
 using namespace std;
 
 void Menu1() {
 	int choice;
 	while (1) {
-		cout << "-------------------------------" << endl << endl;
-		cout << "1. Tao Volume MyFS.dat" << endl;
-		cout << "2. Thiet lap/ Doi/ Kiem tra mat khau truy suat MyFS" << endl;
-		cout << "3. Liet ke danh sach tap tin trong MyFS" << endl;
-		cout << "4. Dat/Doi mat khau cho mot tap tin trong MyFS" << endl;
-		cout << "5. Chep (import) 1 tap tin tu ngoai vao MyFS" << endl;
-		cout << "6. Chep (outport) 1 tap tin tu MyFS ra ngoai" << endl;
-		cout << "7. Xoa 1 tap tin trong MyFS" << endl;
-		cout << "0. Thoat" << endl;
+		system("cls");
+		HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hConsole, 10);
+		cout << "                  888                                      888    888 88888888888 88888888888 " << endl;
+		SetConsoleTextAttribute(hConsole, 11);
+		cout << "                  888                                      888    888     888         888     " << endl;
+		SetConsoleTextAttribute(hConsole, 10);
+		cout << "                  888                                      888    888     888         888     " << endl;
+		SetConsoleTextAttribute(hConsole, 11);
+		cout << "888  888  .d88b.  888 888  888 88888b.d88b.   .d88b.       8888888888     888         888     " << endl;
+		SetConsoleTextAttribute(hConsole, 10);
+		cout << "888  888 d88\"\"88b 888 888  888 888 \"888 \"88b d8P  Y8b      888    888     888         888     " << endl;
+		SetConsoleTextAttribute(hConsole, 11);
+		cout << "Y88  88P 888  888 888 888  888 888  888  888 88888888      888    888     888         888     " << endl;
+		SetConsoleTextAttribute(hConsole, 10);
+		cout << " Y8bd8P  Y88..88P 888 Y88b 888 888  888  888 Y8b.          888    888     888         888     " << endl;
+		SetConsoleTextAttribute(hConsole, 11);
+		cout << "  Y88P    \"Y88P\"  888  \"Y88888 888  888  888  \"Y8888       888    888     888         888     " << endl;
+		SetConsoleTextAttribute(hConsole, 14);
+		cout << "---------------------------------------------------------------------------------------------" << endl << endl;
+		cout << "\t\t1. Tao Volume MyFS.dat" << endl;
+		cout << "\t\t2. Thiet lap/ Doi/ Kiem tra mat khau truy suat MyFS" << endl;
+		cout << "\t\t3. Liet ke danh sach tap tin trong MyFS" << endl;
+		cout << "\t\t4. Dat/Doi mat khau cho mot tap tin trong MyFS" << endl;
+		cout << "\t\t5. Chep (import) 1 tap tin tu ngoai vao MyFS" << endl;
+		cout << "\t\t6. Chep (outport) 1 tap tin tu MyFS ra ngoai" << endl;
+		cout << "\t\t7. Xoa 1 tap tin trong MyFS" << endl;
+		cout << "\t\t0. Thoat" << endl;
 		cout << "Chon chuc nang muon thuc hien: ";
 		cin >> choice;
-		cout << "-------------------------------" << endl << endl;
+		cout << "---------------------------------------------------------------------------------------------" << endl << endl;
 
 		switch (choice)
 		{
 		case 1:
 			createVolume();
+			system("pause");
 			break;
 		case 2:
 			MenuPasswordVolume();
+			system("pause");
 			break;
 		case 3:
 			viewListMenu();
+			system("pause");
 			break;
 		case 4:
 			changeFilePassword();
+			system("pause");
 			break;
 		case 5:
 			importFileToVolume();
+			system("pause");
 			break;
 		case 6:
 			exportFile();
+			system("pause");
 			break;
 		case 7:
 			deleteFile();
+			system("pause");
 			break;
 		case 0:
 			return;
@@ -237,5 +265,3 @@ void writeOffset(char* buffer, int offSet, char* data, int n) {
 		buffer[offSet + i] = data[i];
 	}
 }
-
-
