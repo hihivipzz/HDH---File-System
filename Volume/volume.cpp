@@ -841,12 +841,17 @@ bool Volume::outport(string filename, string outportPath) {
 	}
 
 	// Doc va ghi phan data
-	for (int i = 0; i < cluster_list.size(); i++) {
-		char* buffer = new char[bytePerSector * 4];
+	for (int i = 0; i < cluster_list.size()-1; i++) {
+		char* buffer = new char[bytePerSector * sectorPerCluster];
 		buffer = readCluster(cluster_list[i]);
-		fwrite(buffer, bytePerSector * 4, 1, target);
+		fwrite(buffer, bytePerSector * sectorPerCluster, 1, target);
 		delete[] buffer;
 	}
+	//Ghi dữ liệu trong cluster cuối
+	char* buffer = new char[bytePerSector * sectorPerCluster];
+	buffer = readCluster(cluster_list[cluster_list.size() - 1]);
+	fwrite(buffer, exportEntry.getDataSize() - bytePerSector * sectorPerCluster* (cluster_list.size()-1), 1, target);
+	delete[] buffer;
 
 	fclose(target);
 	return true;
