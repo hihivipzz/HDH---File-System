@@ -40,7 +40,7 @@ public:
 
 	void updatePassword(string filename);
 	void import(string path);
-	bool outport(string filename, vector<Entry*>& listEntry, string outportPath);
+	bool outport(string filename, string outportPath);
 
 	bool deleteFile(string filename);
 	void close();

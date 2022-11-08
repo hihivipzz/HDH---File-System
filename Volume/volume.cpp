@@ -800,53 +800,63 @@ void Volume::import(string path) {
 	readFile.close();
 }
 
-bool Volume::outport(string filename, vector<Entry*>& listEntry, string outportPath) {
+bool Volume::outport(string filename, string outportPath) {
+	string file;
+	if (filename.find_last_of('\\') < filename.length() && filename.find_last_of('\\') >= 0) {
+		file = filename.substr(filename.find_last_of('\\') + 1);
+	}
+	else {
+		file = filename.substr(filename.find_last_of('/') + 1); // xác định tên file từ đường dẫn cung cấp
+	}
 	bool found = false;
-	Entry* exportEntry = nullptr;
-	int size = exportEntry->getDataSize();
+	Entry exportEntry;
+
+	vector<Entry> listEntry = this->readRDET();
 
 	for (int i = 0; i < listEntry.size(); i++) {
-		if (filename == listEntry[i]->getFileName()) {// ktra file co ton tai bang cach ktra ten trong list ten
+		if (filename == listEntry[i].getFileName()) {// ktra file co ton tai bang cach ktra ten trong list ten
 			found = true;
 			exportEntry = listEntry[i];
 			break;
 		}
 	}
 
-	if (!found) return false;
-
-	string password;
-	cout << "Nhap mat khau file/folder can export: ";
-	getline(cin, password);
-	if (!exportEntry->checkPassword(password))
+	if (!found) {
+		cout << "Khong tim thay file muon export!";
 		return false;
+	}
 
-	// Neu la file
+	string outpath = outportPath + "/" + file;
+
 	FILE* target = nullptr;
-	errno_t err = fopen_s(&target, outportPath.c_str(), "wb+");
+	errno_t err = fopen_s(&target, outpath.c_str(), "wb+");
 
 	unsigned int* FAT_table = this->readFat();
 
-	vector<int> cluster_list; // luu vi tri cac cluster data
-	cluster_list.push_back(FAT_table[exportEntry->getStartCluster()]);
-	while (cluster_list.back() != fileEnd) { // khac ket thuc file
+	vector<unsigned int> cluster_list; // luu vi tri cac cluster data
+
+	cluster_list.push_back(exportEntry.getStartCluster());
+	while (FAT_table[cluster_list.back()] != fileEnd) { // khac ket thuc file
 		cluster_list.push_back(FAT_table[cluster_list.back()]);
 	}
-	cluster_list.push_back(FAT_table[cluster_list.back()]);
 
+	// Doc va luu vung he thong
+	for (int i = 0; i < numberOfFat * sectorPerFat + 1; i++) {
+		char* buffer = new char[bytePerSector];
+		buffer = readBlock(i);
+		fwrite(buffer, bytePerSector, 1, target);
+		delete[] buffer;
+	}
 
-	for (int i = 0; i < cluster_list.size(); ++i) {
-		char* buffer = new char[BUFFER_SIZE];
+	// Doc va luu phan data
+	for (int i = 0; i < cluster_list.size(); i++) {
+		char* buffer = new char[bytePerSector * 4];
 		buffer = readCluster(cluster_list[i]);
-		fwrite(buffer, 1, BUFFER_SIZE, target);
+		fwrite(buffer, bytePerSector * 4, 1, target);
 		delete[] buffer;
 	}
 
 	fclose(target);
-	
-
-	// Neu la folder: chua xu ly
-
 	return true;
 }
 
