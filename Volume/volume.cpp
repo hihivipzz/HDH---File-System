@@ -840,15 +840,7 @@ bool Volume::outport(string filename, string outportPath) {
 		cluster_list.push_back(FAT_table[cluster_list.back()]);
 	}
 
-	// Doc va luu vung he thong
-	for (int i = 0; i < numberOfFat * sectorPerFat + 1; i++) {
-		char* buffer = new char[bytePerSector];
-		buffer = readBlock(i);
-		fwrite(buffer, bytePerSector, 1, target);
-		delete[] buffer;
-	}
-
-	// Doc va luu phan data
+	// Doc va ghi phan data
 	for (int i = 0; i < cluster_list.size(); i++) {
 		char* buffer = new char[bytePerSector * 4];
 		buffer = readCluster(cluster_list[i]);

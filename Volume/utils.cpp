@@ -37,6 +37,9 @@ void Menu1() {
 		case 5:
 			importFileToVolume();
 			break;
+		case 6:
+			exportFile();
+			break;
 		case 7:
 			deleteFile();
 			break;
